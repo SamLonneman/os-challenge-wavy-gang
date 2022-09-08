@@ -1,2 +1,3 @@
-# OS Challenge
-## 02159 - Operating Systems
+# Wavy Gang
+## 02159 Operating Systems
+### OS Challenge
