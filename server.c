@@ -22,10 +22,10 @@ void swapEndianness(void *start, int size) {
 
 int main(int argc, char *argv[]) {
 
-    /* First call to socket() function */
+    // Create Socket
     int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
 
-    /* Initialize socket structure */
+    // Initialize socket structure
     struct sockaddr_in serv_addr;
     bzero((char *)&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
@@ -66,9 +66,11 @@ int main(int argc, char *argv[]) {
     swapEndianness(&end, 8);
     swapEndianness(&p, 8);
 
-    printf("Message:\n\thash:\n\tstart: %llu\n\tend: %llu\n\tpriority: %d\n", start, end, p);
+    // Print request components
+    printf("Message:\n\thash: (not sure yet)\n\tstart: %llu\n\tend: %llu\n\tpriority: %d\n", start, end, p);
 
-    unsigned long long response = 0x0100000000000000;
+    // Return answer to client (currently always 1)
+    uint64_t response = 0x0100000000000000;
     write(newSocketDescriptor, &response, 8);
 
     return 0;
