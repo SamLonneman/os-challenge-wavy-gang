@@ -29,12 +29,12 @@ int main(int argc, char *argv[]) {
     // Accept connection from client
     struct sockaddr_in cli_addr;
     int clientLength = sizeof(cli_addr);
-    int newsockfd = accept(socketDescriptor, (struct sockaddr *)&cli_addr, &clientLength);
+    int newSocketDescriptor = accept(socketDescriptor, (struct sockaddr *)&cli_addr, &clientLength);
 
     // Start communicating
     char buffer[PACKET_REQUEST_SIZE];
     bzero(buffer, PACKET_REQUEST_SIZE);
-    read(newsockfd, buffer, PACKET_REQUEST_SIZE);
+    read(newSocketDescriptor, buffer, PACKET_REQUEST_SIZE);
 
     char hash[32];
     unsigned long long start;
@@ -47,7 +47,9 @@ int main(int argc, char *argv[]) {
     memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
     printf("Message:\n\thash:\n\tstart: %llu\n\tend: %llu\n\tpriority: %d\n", start, end, p);
-//    write(newsockfd,"I got your message",18);
+
+    unsigned long long response = 1;
+    write(newSocketDescriptor, &response, 8);
 
     return 0;
 }
