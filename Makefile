@@ -1,9 +1,5 @@
-default: all
+default: server.c
+	gcc -o server server.c
 
-all: server
-
-Server: server.c
-	gcc -g -o server server.c
-
-clean veryclean:
+clean:
 	rm -f server
