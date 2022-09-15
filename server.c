@@ -15,13 +15,13 @@ int main(int argc, char *argv[]) {
 
     /* Initialize socket structure */
     struct sockaddr_in serv_addr;
-    bzero((char *) &serv_addr, sizeof(serv_addr));
+    bzero((char *)&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(atoi(argv[1]));
 
     // Bind to host address
-    bind(socketDescriptor, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
+    bind(socketDescriptor, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 
     // Listen for client
     listen(socketDescriptor, 5);
@@ -32,9 +32,9 @@ int main(int argc, char *argv[]) {
     int newsockfd = accept(socketDescriptor, (struct sockaddr *)&cli_addr, &clientLength);
 
     // Start communicating
-    char buffer[49];
-    bzero(buffer,49);
-    read( newsockfd,buffer,49 );
+    char buffer[PACKET_REQUEST_SIZE];
+    bzero(buffer, PACKET_REQUEST_SIZE);
+    read(newsockfd, buffer, PACKET_REQUEST_SIZE);
 
     printf("Here is the message: %s\n",buffer);
     write(newsockfd,"I got your message",18);
