@@ -8,6 +8,18 @@
 
 #include "messages.h"
 
+void swapEndianness(void *start, int size) {
+    void *end = (void*)((char*)start + size - 1);
+    char buffer = 0;
+    for (int i = 0; i <= size / 2; i++) {
+        memcpy(&buffer, start, 1);
+        memcpy(start, end, 1);
+        memcpy(end, &buffer, 1);
+        start = (void*)((char*)start + 1);
+        end = (void*)((char*)end - 1);
+    }
+}
+
 int main(int argc, char *argv[]) {
 
     /* First call to socket() function */
@@ -45,6 +57,11 @@ int main(int argc, char *argv[]) {
     memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
     memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
     memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+
+    swapEndianness(hash, 32);
+    swapEndianness(&start, 8);
+    swapEndianness(&end, 8);
+    swapEndianness(&p, 8);
 
     printf("Message:\n\thash:\n\tstart: %llu\n\tend: %llu\n\tpriority: %d\n", start, end, p);
 
