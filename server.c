@@ -32,10 +32,10 @@ int main(int argc, char *argv[]) {
     // Start communicating
     char buffer[49];
     bzero(buffer,49);
-    fread( newsockfd,buffer,49 );
+    read( newsockfd,buffer,49 );
 
     printf("Here is the message: %s\n",buffer);
-    fwrite(newsockfd,"I got your message",18);
+    write(newsockfd,"I got your message",18);
 
     return 0;
 }
