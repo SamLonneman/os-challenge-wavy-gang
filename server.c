@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 
     printf("Message:\n\thash:\n\tstart: %llu\n\tend: %llu\n\tpriority: %d\n", start, end, p);
 
-    unsigned long long response = 1;
+    unsigned long long response = 0x0100000000000000;
     write(newSocketDescriptor, &response, 8);
 
     return 0;
