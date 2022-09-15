@@ -48,16 +48,19 @@ int main(int argc, char *argv[]) {
     bzero(buffer, PACKET_REQUEST_SIZE);
     read(newSocketDescriptor, buffer, PACKET_REQUEST_SIZE);
 
-    char hash[32];
-    unsigned long long start;
-    unsigned long long end;
-    char p;
+    // Prepare request components
+    uint8_t hash[32];
+    uint64_t start;
+    uint64_t end;
+    uint8_t p;
 
+    // Extract components from request
     memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
     memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
     memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
     memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
+    // Correct endianness for each component
     swapEndianness(hash, 32);
     swapEndianness(&start, 8);
     swapEndianness(&end, 8);
