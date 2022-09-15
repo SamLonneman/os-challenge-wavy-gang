@@ -1,4 +1,4 @@
-default: server.c
+default: server.c messages.h
 	gcc -o server server.c
 
 clean:
