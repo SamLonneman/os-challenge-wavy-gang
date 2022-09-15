@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
     memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
-    printf("Message:\n\thash:\n\tstart: %llu\n\tend: %llu\n\tpriority: %d", start, end, p);
+    printf("Message:\n\thash:\n\tstart: %llu\n\tend: %llu\n\tpriority: %d\n", start, end, p);
 //    write(newsockfd,"I got your message",18);
 
     return 0;
