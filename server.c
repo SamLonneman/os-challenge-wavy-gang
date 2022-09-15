@@ -36,7 +36,17 @@ int main(int argc, char *argv[]) {
     bzero(buffer, PACKET_REQUEST_SIZE);
     read(newsockfd, buffer, PACKET_REQUEST_SIZE);
 
-    printf("Here is the message: %s\n",buffer);
+    char *hash;
+    unsigned long long start;
+    unsigned long long end;
+    char p;
+
+    memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+    memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+    memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+    memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+
+    printf("Message:\nhash:\nstart: %llu\nend: %llu priority: %d\n", start, end, p);
     write(newsockfd,"I got your message",18);
 
     return 0;
