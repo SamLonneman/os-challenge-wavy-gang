@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_port = htons(atoi(argv[1]));
 
     // Bind to host address
-    bind(socketDescriptor, (struct sockaddr *) &serv_addr, sizeof(serv_addr))
+    bind(socketDescriptor, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
 
     // Listen for client
     listen(socketDescriptor, 5);
