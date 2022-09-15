@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#include "messages.h"
+
 int main(int argc, char *argv[]) {
 
     /* First call to socket() function */
