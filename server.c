@@ -32,28 +32,21 @@ int main(int argc, char *argv[]) {
     int newsockfd = accept(socketDescriptor, (struct sockaddr *)&cli_addr, &clientLength);
 
     // Start communicating
-    printf("1");
     char buffer[PACKET_REQUEST_SIZE];
     bzero(buffer, PACKET_REQUEST_SIZE);
     read(newsockfd, buffer, PACKET_REQUEST_SIZE);
 
-    printf("2");
-    char hash[PACKET_REQUEST_SIZE];
+    char hash[32];
     unsigned long long start;
     unsigned long long end;
     char p;
-    printf("3");
 
     memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-    printf("4");
     memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-    printf("5");
     memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
-    printf("6");
     memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
-    printf("7");
 
-    printf("Message:\nhash:\nstart: %llu\nend: %llu priority: %d\n", start, end, p);
+    printf("Message:\n\thash:\n\tstart: %llu\n\tend: %llu\n\tpriority: %d", start, end, p);
     write(newsockfd,"I got your message",18);
 
     return 0;
