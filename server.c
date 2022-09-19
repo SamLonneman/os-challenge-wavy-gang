@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 
 #include <string.h>
+#include <openssl/sha.h>
 
 #include "messages.h"
 
@@ -50,6 +51,7 @@ int main(int argc, char *argv[]) {
 
     // Prepare request components
     uint8_t hash[32];
+    bzero(hash, 32);
     uint64_t start;
     uint64_t end;
     uint8_t p;
@@ -70,8 +72,16 @@ int main(int argc, char *argv[]) {
     printf("Message:\n\thash: (not sure yet)\n\tstart: %llu\n\tend: %llu\n\tpriority: %d\n", start, end, p);
 
     // Return answer to client (currently always 1)
-    uint64_t response = 0x0100000000000000;
-    write(newSocketDescriptor, &response, 8);
+    uint64_t query = 1;
+    uint8_t hashTest[32];
+    bzero(hashTest, 32);
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, query, 8);
+    SHA256_Final(hashTest, &sha256);
+    printf("Are they equal? %b", memcmp(hash, hashTest, 32)==0);
+
+    write(newSocketDescriptor, swapEndianness(query), 8);
 
     return 0;
 }
