@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
     printf("Message:\n\thash: (not sure yet)\n\tstart: %llu\n\tend: %llu\n\tpriority: %d\n", start, end, p);
 
     // Return answer to client (currently always 1)
-    uint64_t query = 1;
+    uint64_t query = 0x0000000000000001;
     uint8_t hashTest[32];
     bzero(hashTest, 32);
     SHA256_CTX sha256;
