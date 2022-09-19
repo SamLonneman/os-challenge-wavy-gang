@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     // Correct endianness for each component
     swapEndianness(&start, 8);
     swapEndianness(&end, 8);
-    swapEndianness(&p, 8);
+    swapEndianness(&p, 1);
 
     printf("Start: %llu\nEnd: %llu\n", start, end);
 
