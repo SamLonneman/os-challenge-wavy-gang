@@ -89,9 +89,9 @@ int main(int argc, char *argv[]) {
     SHA256_Init(&sha256);
     SHA256_Update(&sha256, &query, 8);
     SHA256_Final(hashTest, &sha256);
-    printf("Hash from request: ");
+    printf("Hash from request:\n");
     print_bytes(hash, 32);
-    printf("Hash from SHA256 of 1: ");
+    printf("Hash from SHA256 of 1:\n");
     print_bytes(hashTest, 32);
     printf("Are they equal? %d\n", memcmp(hash, hashTest, 32));
 
