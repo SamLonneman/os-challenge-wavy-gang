@@ -1,4 +1,4 @@
-default: server.c messages.h openssl/sha.h
+default: server.c messages.h
 	gcc -o server server.c
 
 clean:
