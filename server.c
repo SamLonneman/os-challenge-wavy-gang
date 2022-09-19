@@ -9,16 +9,6 @@
 
 #include "messages.h"
 
-void print_bytes(void *ptr, int size)
-{
-    unsigned char *p = ptr;
-    int i;
-    for (i=0; i<size; i++) {
-        printf("%02hhX ", p[i]);
-    }
-    printf("\n");
-}
-
 void swapEndianness(void *start, int size) {
     void *end = (void*)((char*)start + size - 1);
     char buffer = 0;
@@ -61,7 +51,6 @@ int main(int argc, char *argv[]) {
 
     // Prepare request components
     uint8_t hash[32];
-    bzero(hash, 32);
     uint64_t start;
     uint64_t end;
     uint8_t p;
@@ -77,25 +66,23 @@ int main(int argc, char *argv[]) {
     swapEndianness(&end, 8);
     swapEndianness(&p, 8);
 
-    // Print request components
-    printf("Message:\n\thash: (not sure yet)\n\tstart: %llu\n\tend: %llu\n\tpriority: %d\n", start, end, p);
+    // Return answer to client
+    uint8_t calculatedHash[32];
+    uint64_t key;
+    for (uint64_t i = start; i < end; i++) {
+        SHA256_CTX sha256;
+        SHA256_Init(&sha256);
+        SHA256_Update(&sha256, &i, 8);
+        SHA256_Final(calculatedHash, &sha256);
+        if (memcmp(hash, calculatedHash, 32) == 0) {
+            key = i;
+            break;
+        }
+    }
 
-    // Return answer to client (currently always 1)
-    uint64_t query = 0x0000000000000001;
-    uint8_t hashTest[32];
-    bzero(hashTest, 32);
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, &query, 8);
-    SHA256_Final(hashTest, &sha256);
-    printf("Hash from request:\n");
-    print_bytes(hash, 32);
-    printf("Hash from SHA256 of 1:\n");
-    print_bytes(hashTest, 32);
-    printf("Difference between request and SHA(1): %d\n", memcmp(hash, hashTest, 32));
-
-    uint64_t response = 0x0100000000000000;
-    write(newSocketDescriptor, &response, 8);
+    // Send resulting key back to client
+    swapEndianness(&key, 8);
+    write(newSocketDescriptor, &key, 8);
 
     return 0;
 }
