@@ -94,8 +94,7 @@ int main(int argc, char *argv[]) {
     print_bytes(hashTest, 32);
     printf("Difference between request and SHA(1): %d\n", memcmp(hash, hashTest, 32));
 
-//    swapEndianness(&query, 8);
-    write(newSocketDescriptor, 0x0100000000000000, 8);
+    write(newSocketDescriptor, &swapEndianness(&query, 8), 8);
 
     return 0;
 }
