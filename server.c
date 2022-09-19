@@ -73,7 +73,6 @@ int main(int argc, char *argv[]) {
     memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
     // Correct endianness for each component
-    swapEndianness(hash, 32);
     swapEndianness(&start, 8);
     swapEndianness(&end, 8);
     swapEndianness(&p, 8);
@@ -93,7 +92,7 @@ int main(int argc, char *argv[]) {
     print_bytes(hash, 32);
     printf("Hash from SHA256 of 1:\n");
     print_bytes(hashTest, 32);
-    printf("Are they equal? %d\n", memcmp(hash, hashTest, 32));
+    printf("Difference between request and SHA(1): %d\n", memcmp(hash, hashTest, 32));
 
     swapEndianness(&query, 8);
     write(newSocketDescriptor, query, 8);
