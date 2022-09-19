@@ -66,6 +66,8 @@ int main(int argc, char *argv[]) {
     swapEndianness(&end, 8);
     swapEndianness(&p, 8);
 
+    printf("Start: %llu\nEnd: %llu\n", start, end);
+
     // Return answer to client
     uint8_t calculatedHash[32];
     uint64_t key;
