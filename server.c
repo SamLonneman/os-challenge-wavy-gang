@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     bzero(hashTest, 32);
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, query, 8);
+    SHA256_Update(&sha256, &query, 8);
     SHA256_Final(hashTest, &sha256);
     printf("Are they equal? %d", memcmp(hash, hashTest, 32)==0);
 
