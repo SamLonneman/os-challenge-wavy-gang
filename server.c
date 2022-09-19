@@ -81,7 +81,8 @@ int main(int argc, char *argv[]) {
     SHA256_Final(hashTest, &sha256);
     printf("Are they equal? %d", memcmp(hash, hashTest, 32)==0);
 
-    write(newSocketDescriptor, swapEndianness(&query, 8), 8);
+    swapEndianness(&query, 8)
+    write(newSocketDescriptor, query, 8);
 
     return 0;
 }
