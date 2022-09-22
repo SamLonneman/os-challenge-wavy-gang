@@ -9,18 +9,6 @@
 
 #include "messages.h"
 
-void swapEndianness(void *start, int size) {
-    void *end = (void*)((char*)start + size - 1);
-    char buffer = 0;
-    for (int i = 0; i <= size / 2; i++) {
-        memcpy(&buffer, start, 1);
-        memcpy(start, end, 1);
-        memcpy(end, &buffer, 1);
-        start = (void*)((char*)start + 1);
-        end = (void*)((char*)end - 1);
-    }
-}
-
 int main(int argc, char *argv[]) {
 
     // Create Socket
@@ -28,8 +16,9 @@ int main(int argc, char *argv[]) {
 
     // Setting the port available in case of ERROR
     if (setsockopt(socketDescriptor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
-    perror("setsockopt(SO_REUSEADDR) failed");
+        perror("setsockopt(SO_REUSEADDR) failed");
     }
+
     // Initialize socket structure
     struct sockaddr_in serv_addr;
     bzero((char *)&serv_addr, sizeof(serv_addr));
@@ -40,7 +29,7 @@ int main(int argc, char *argv[]) {
     // Bind to host address
     if (bind(socketDescriptor, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR on binding");
-    };
+    }
 
     // Listen for client
     listen(socketDescriptor, 5);
@@ -50,9 +39,10 @@ int main(int argc, char *argv[]) {
     int clientLength = sizeof(cli_addr);
     int newSocketDescriptor = accept(socketDescriptor, (struct sockaddr *)&cli_addr, &clientLength);
 
+    // Check for accept error
     if (newSocketDescriptor < 0) {
-      perror("ERROR on accept");
-      exit(1);
+        perror("ERROR on accept");
+        exit(1);
     }
 
     // Start communicating
@@ -72,15 +62,14 @@ int main(int argc, char *argv[]) {
     memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
     memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
-    // Correct endianness for each component
-    swapEndianness(&start, 8);
-    swapEndianness(&end, 8);
-    swapEndianness(&p, 1);
+    // Convert byte order
+    start = htobe64(start);
+    end = htobe64(end);
 
-
+    // Debugging print
     printf("Start: %llu\nEnd: %llu\n", start, end);
 
-    // Return answer to client
+    // Reverse hash
     uint8_t calculatedHash[32];
     uint64_t key;
     for (uint64_t i = start; i < end; i++) {
@@ -95,7 +84,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Send resulting key back to client
-    swapEndianness(&key, 8);
+    key = be64toh(key);
     write(newSocketDescriptor, &key, 8);
 
     return 0;
