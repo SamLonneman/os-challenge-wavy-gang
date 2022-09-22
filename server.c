@@ -42,61 +42,66 @@ int main(int argc, char *argv[]) {
         perror("ERROR on binding");
     };
 
+    int NUM_CONNECTIONS = 5;
+    int ALL_CONNECTIONS[NUM_CONNECTIONS];   // array to store each connection's socket descriptor
+
     // Listen for client
-    listen(socketDescriptor, 5);
+    listen(socketDescriptor, NUM_CONNECTIONS);
 
     // Accept connection from client
     struct sockaddr_in cli_addr;
     int clientLength = sizeof(cli_addr);
-    int newSocketDescriptor = accept(socketDescriptor, (struct sockaddr *)&cli_addr, &clientLength);
+    for(i =1; i <= NUM_CONNECTIONS; i += 1) {
+        int ALL_CONNECTIONS[i] = accept(socketDescriptor, (struct sockaddr *) &cli_addr, &clientLength);
 
-    if (newSocketDescriptor < 0) {
-      perror("ERROR on accept");
-      exit(1);
-    }
-
-    // Start communicating
-    char buffer[PACKET_REQUEST_SIZE];
-    bzero(buffer, PACKET_REQUEST_SIZE);
-    read(newSocketDescriptor, buffer, PACKET_REQUEST_SIZE);
-
-    // Prepare request components
-    uint8_t hash[32];
-    uint64_t start;
-    uint64_t end;
-    uint8_t p;
-
-    // Extract components from request
-    memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-    memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-    memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
-    memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
-
-    // Correct endianness for each component
-    swapEndianness(&start, 8);
-    swapEndianness(&end, 8);
-    swapEndianness(&p, 1);
-
-
-    printf("Start: %llu\nEnd: %llu\n", start, end);
-
-    // Return answer to client
-    uint8_t calculatedHash[32];
-    uint64_t key;
-    for (uint64_t i = start; i < end; i++) {
-        SHA256_CTX sha256;
-        SHA256_Init(&sha256);
-        SHA256_Update(&sha256, &i, 8);
-        SHA256_Final(calculatedHash, &sha256);
-        if (memcmp(hash, calculatedHash, 32) == 0) {
-            key = i;
-            break;
+        if (ALL_CONNECTIONS[i] < 0) {
+            perror("ERROR on accept");
+            exit(1);
         }
-    }
 
-    // Send resulting key back to client
-    swapEndianness(&key, 8);
-    write(newSocketDescriptor, &key, 8);
+        // Start communicating
+        char buffer[PACKET_REQUEST_SIZE];
+        bzero(buffer, PACKET_REQUEST_SIZE);
+        read(ALL_CONNECTIONS[i], buffer, PACKET_REQUEST_SIZE);
+
+        // Prepare request components
+        uint8_t hash[32];
+        uint64_t start;
+        uint64_t end;
+        uint8_t p;
+
+        // Extract components from request
+        memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+        memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+        memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+        memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+
+        // Correct endianness for each component
+        swapEndianness(&start, 8);
+        swapEndianness(&end, 8);
+        swapEndianness(&p, 1);
+
+
+        printf("Start: %llu\nEnd: %llu\n", start, end);
+
+        // Return answer to client
+        uint8_t calculatedHash[32];
+        uint64_t key;
+        for (uint64_t i = start; i < end; i++) {
+            SHA256_CTX sha256;
+            SHA256_Init(&sha256);
+            SHA256_Update(&sha256, &i, 8);
+            SHA256_Final(calculatedHash, &sha256);
+            if (memcmp(hash, calculatedHash, 32) == 0) {
+                key = i;
+                break;
+            }
+        }
+
+        // Send resulting key back to client
+        swapEndianness(&key, 8);
+        write(ALL_CONNECTIONS[i], &key, 8);
+    }
 
     return 0;
 }
