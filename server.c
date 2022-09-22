@@ -26,6 +26,10 @@ int main(int argc, char *argv[]) {
     // Create Socket
     int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
 
+    // Setting the port available in case of ERROR
+    if (setsockopt(socketDescriptor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
+    perror("setsockopt(SO_REUSEADDR) failed");
+    }
     // Initialize socket structure
     struct sockaddr_in serv_addr;
     bzero((char *)&serv_addr, sizeof(serv_addr));
@@ -34,7 +38,9 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_port = htons(atoi(argv[1]));
 
     // Bind to host address
-    bind(socketDescriptor, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+    if (bind(socketDescriptor, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        perror("ERROR on binding");
+    };
 
     // Listen for client
     listen(socketDescriptor, 5);
@@ -43,6 +49,11 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clientLength = sizeof(cli_addr);
     int newSocketDescriptor = accept(socketDescriptor, (struct sockaddr *)&cli_addr, &clientLength);
+
+    if (newSocketDescriptor < 0) {
+      perror("ERROR on accept");
+      exit(1);
+    }
 
     // Start communicating
     char buffer[PACKET_REQUEST_SIZE];
@@ -65,6 +76,7 @@ int main(int argc, char *argv[]) {
     swapEndianness(&start, 8);
     swapEndianness(&end, 8);
     swapEndianness(&p, 1);
+
 
     printf("Start: %llu\nEnd: %llu\n", start, end);
 
