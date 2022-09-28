@@ -51,9 +51,10 @@ int main(int argc, char *argv[]) {
     // Accept connection from client
     struct sockaddr_in cli_addr;
     int clientLength = sizeof(cli_addr);
-    for(i =1; i <= NUM_CONNECTIONS; i += 1) {
+    for(i =1; i <= NUM_CONNECTIONS; i ++ ) {
         int ALL_CONNECTIONS[i] = accept(socketDescriptor, (struct sockaddr *) &cli_addr, &clientLength);
 
+        // store each unique descriptor in array
         if (ALL_CONNECTIONS[i] < 0) {
             perror("ERROR on accept");
             exit(1);
