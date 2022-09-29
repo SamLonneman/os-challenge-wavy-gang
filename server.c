@@ -1,35 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <netdb.h>
 #include <netinet/in.h>
 
-#include <string.h>
 #include <openssl/sha.h>
+
+#include <signal.h>
+#include <unistd.h>
 
 #include "messages.h"
 
-void swapEndianness(void *start, int size) {
-    void *end = (void*)((char*)start + size - 1);
-    char buffer = 0;
-    for (int i = 0; i <= size / 2; i++) {
-        memcpy(&buffer, start, 1);
-        memcpy(start, end, 1);
-        memcpy(end, &buffer, 1);
-        start = (void*)((char*)start + 1);
-        end = (void*)((char*)end - 1);
-    }
+// NOTE: Some socket logic taken from https://www.tutorialspoint.com/unix_sockets/index.htm
+
+
+// Socket variables are global so that they can be closed by handler.
+int sockfd;
+int newsockfd;
+
+// CTRL+C interrupt handler for graceful termination
+void terminationHandler(int sig) {
+    close(sockfd);
+    close(newsockfd);
+    exit(0);
 }
 
 int main(int argc, char *argv[]) {
 
-    // Create Socket
-    int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+    // Set up signal for graceful termination
+    signal(SIGINT, terminationHandler);
 
-    // Setting the port available in case of ERROR
-    if (setsockopt(socketDescriptor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
-    perror("setsockopt(SO_REUSEADDR) failed");
+    // Create socket
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+    // Setting the port available in case it is not
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
+        perror("setsockopt(SO_REUSEADDR) failed");
+        exit(1);
     }
+
     // Initialize socket structure
     struct sockaddr_in serv_addr;
     bzero((char *)&serv_addr, sizeof(serv_addr));
@@ -38,72 +48,105 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_port = htons(atoi(argv[1]));
 
     // Bind to host address
-    if (bind(socketDescriptor, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+    if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR on binding");
-    };
-
-    int NUM_CONNECTIONS = 5;
-    int ALL_CONNECTIONS[NUM_CONNECTIONS];   // array to store each connection's socket descriptor
+        exit(1);
+    }
 
     // Listen for client
-    listen(socketDescriptor, NUM_CONNECTIONS);
+    listen(sockfd, 100);
 
-    // Accept connection from client
+    // Declare client address and size
     struct sockaddr_in cli_addr;
-    int clientLength = sizeof(cli_addr);
-    for(i =1; i <= NUM_CONNECTIONS; i ++ ) {
-        int ALL_CONNECTIONS[i] = accept(socketDescriptor, (struct sockaddr *) &cli_addr, &clientLength);
+    int clilen = sizeof(cli_addr);
 
-        // store each unique descriptor in array
-        if (ALL_CONNECTIONS[i] < 0) {
+    // Declare a request counter
+    int requestCounter = 0;
+
+    // Begin accepting client connections as concurrent child processes
+    while (1) {
+
+        // Accept connection and check for error
+        newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        if (newsockfd < 0) {
             perror("ERROR on accept");
             exit(1);
         }
 
-        // Start communicating
-        char buffer[PACKET_REQUEST_SIZE];
-        bzero(buffer, PACKET_REQUEST_SIZE);
-        read(ALL_CONNECTIONS[i], buffer, PACKET_REQUEST_SIZE);
-
-        // Prepare request components
-        uint8_t hash[32];
-        uint64_t start;
-        uint64_t end;
-        uint8_t p;
-
-        // Extract components from request
-        memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-        memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-        memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
-        memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
-
-        // Correct endianness for each component
-        swapEndianness(&start, 8);
-        swapEndianness(&end, 8);
-        swapEndianness(&p, 1);
-
-
-        printf("Start: %llu\nEnd: %llu\n", start, end);
-
-        // Return answer to client
-        uint8_t calculatedHash[32];
-        uint64_t key;
-        for (uint64_t i = start; i < end; i++) {
-            SHA256_CTX sha256;
-            SHA256_Init(&sha256);
-            SHA256_Update(&sha256, &i, 8);
-            SHA256_Final(calculatedHash, &sha256);
-            if (memcmp(hash, calculatedHash, 32) == 0) {
-                key = i;
-                break;
-            }
+        // Fork off a child process and check for error
+        int pid = fork();
+        if (pid < 0) {
+            perror("ERROR on fork");
+            exit(1);
         }
-        // Send resulting key back to client
-        swapEndianness(&key, 8);
-        write(ALL_CONNECTIONS[i], &key, 8);
+
+        // Increment Request Counter
+        ++requestCounter;
+
+        // Child: process a request and return a result
+        if (pid == 0) {
+
+            // Close the original socket on this process
+            close(sockfd);
+
+            // Print request received message
+            printf("[%d] Request received.\n", requestCounter);
+
+            // Read in request through new socket
+            char buffer[PACKET_REQUEST_SIZE];
+            bzero(buffer, PACKET_REQUEST_SIZE);
+            read(newsockfd, buffer, PACKET_REQUEST_SIZE);
+
+            // Declare request components
+            uint8_t hash[32];
+            uint64_t start;
+            uint64_t end;
+            uint8_t p;
+
+            // Extract components from request
+            memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+            memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+            memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+            memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+
+            // Convert byte order as needed
+            start = htobe64(start);
+            end = htobe64(end);
+
+            // Debugging print with start and end
+            // printf("Start: %llu\nEnd: %llu\n", start, end);
+
+            // Search for key in given range corresponding to given hash
+            uint8_t calculatedHash[32];
+            uint64_t key;
+            for (uint64_t i = start; i < end; i++) {
+                SHA256_CTX sha256;
+                SHA256_Init(&sha256);
+                SHA256_Update(&sha256, &i, 8);
+                SHA256_Final(calculatedHash, &sha256);
+                if (memcmp(hash, calculatedHash, 32) == 0) {
+                    key = i;
+                    break;
+                }
+            }
+
+            // Send resulting key back to client
+            key = be64toh(key);
+            write(newsockfd, &key, 8);
+
+            // Print response sent message
+            printf("[%d] Response Sent.\n", requestCounter);
+
+            // Clean up and exit the child process
+            close(newsockfd);
+            exit(0);
+        }
+
+        // Parent: close the new socket, then begin loop again
+        else {
+            close(newsockfd);
+        }
     }
 
     return 0;
-
-
 }
