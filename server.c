@@ -7,14 +7,31 @@
 #include <string.h>
 #include <openssl/sha.h>
 
+#include <signal.h>
+#include <unistd.h>
+
 #include "messages.h"
 
 // NOTE: Some socket logic taken from https://www.tutorialspoint.com/unix_sockets/index.htm
 
+
+// Socket variable is global so that it can be closed by handler.
+int sockfd;
+
+// CTRL+C interrupt handler for graceful termination
+void terminationHandler(int sig) {
+    close(sockfd);
+    printf("\nClosed socket and exit.\n");
+    exit(0);
+}
+
 int main(int argc, char *argv[]) {
 
-    // Create Socket
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    // Set up signal for graceful termination
+    signal(SIGINT, terminationHandler);
+
+    // Create socket
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     // Setting the port available in case it is not
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
