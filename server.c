@@ -9,6 +9,8 @@
 
 #include "messages.h"
 
+// NOTE: Some socket logic taken from https://www.tutorialspoint.com/unix_sockets/index.htm
+
 int main(int argc, char *argv[]) {
 
     // Create Socket
