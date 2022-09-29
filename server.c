@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <netdb.h>
 #include <netinet/in.h>
 
-#include <string.h>
 #include <openssl/sha.h>
 
 #include <signal.h>
@@ -17,11 +17,12 @@
 
 // Socket variable is global so that it can be closed by handler.
 int sockfd;
+int newsockfd;
 
 // CTRL+C interrupt handler for graceful termination
 void terminationHandler(int sig) {
     close(sockfd);
-    printf("\nClosed socket and exit.\n");
+    close(newsockfd);
     exit(0);
 }
 
@@ -53,7 +54,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Listen for client
-    listen(sockfd, 1);
+    listen(sockfd, 100);
 
     // Declare client address and size
     struct sockaddr_in cli_addr;
@@ -66,7 +67,7 @@ int main(int argc, char *argv[]) {
     while (1) {
 
         // Accept connection and check for error
-        int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         if (newsockfd < 0) {
             perror("ERROR on accept");
             exit(1);
