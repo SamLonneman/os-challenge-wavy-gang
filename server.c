@@ -15,7 +15,7 @@
 // NOTE: Some socket logic taken from https://www.tutorialspoint.com/unix_sockets/index.htm
 
 
-// Socket variable is global so that it can be closed by handler.
+// Socket variables are global so that they can be closed by handler.
 int sockfd;
 int newsockfd;
 
