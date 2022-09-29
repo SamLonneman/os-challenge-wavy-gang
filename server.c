@@ -98,11 +98,12 @@ int main(int argc, char *argv[]) {
                 break;
             }
         }
-
         // Send resulting key back to client
         swapEndianness(&key, 8);
         write(ALL_CONNECTIONS[i], &key, 8);
     }
 
     return 0;
+
+
 }
