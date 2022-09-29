@@ -14,10 +14,10 @@
 int main(int argc, char *argv[]) {
 
     // Create Socket
-    int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     // Setting the port available in case it is not
-    if (setsockopt(socketDescriptor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
         perror("setsockopt(SO_REUSEADDR) failed");
         exit(1);
     }
@@ -30,17 +30,17 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_port = htons(atoi(argv[1]));
 
     // Bind to host address
-    if (bind(socketDescriptor, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+    if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR on binding");
         exit(1);
     }
 
     // Listen for client
-    listen(socketDescriptor, 1);
+    listen(sockfd, 1);
 
     // Declare client address and size
     struct sockaddr_in cli_addr;
-    int clientLength = sizeof(cli_addr);
+    int clilen = sizeof(cli_addr);
 
     // Declare a request counter
     int requestCounter = 0;
@@ -49,8 +49,8 @@ int main(int argc, char *argv[]) {
     while (1) {
 
         // Accept connection and check for error
-        int newSocketDescriptor = accept(socketDescriptor, (struct sockaddr *) &cli_addr, &clientLength);
-        if (newSocketDescriptor < 0) {
+        int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        if (newsockfd < 0) {
             perror("ERROR on accept");
             exit(1);
         }
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
         if (pid == 0) {
 
             // Close the original socket on this process
-            close(socketDescriptor);
+            close(sockfd);
 
             // Print request received message
             printf("[%d] Request received.\n", requestCounter);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
             // Read in request through new socket
             char buffer[PACKET_REQUEST_SIZE];
             bzero(buffer, PACKET_REQUEST_SIZE);
-            read(newSocketDescriptor, buffer, PACKET_REQUEST_SIZE);
+            read(newsockfd, buffer, PACKET_REQUEST_SIZE);
 
             // Declare request components
             uint8_t hash[32];
@@ -114,19 +114,19 @@ int main(int argc, char *argv[]) {
 
             // Send resulting key back to client
             key = be64toh(key);
-            write(newSocketDescriptor, &key, 8);
+            write(newsockfd, &key, 8);
 
             // Print response sent message
             printf("[%d] Response Sent.\n", requestCounter);
 
             // Clean up and exit the child process
-            close(newSocketDescriptor);
+            close(newsockfd);
             exit(0);
         }
 
         // Parent: close the new socket, then begin loop again
         else {
-            close(newSocketDescriptor);
+            close(newsockfd);
         }
     }
 
