@@ -1,5 +1,5 @@
 default: server.c messages.h
-	gcc -o server server.c -I/openssl/include/ -L/openssl/lib/ -lcrypto
+	gcc -o server server.c -lcrypto
 
 clean:
 	rm -f server
