@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     // Create Socket
     int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
 
-    // Setting the port available in case of ERROR
+    // Setting the port available in case it is not
     if (setsockopt(socketDescriptor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
         perror("setsockopt(SO_REUSEADDR) failed");
         exit(1);
@@ -40,6 +40,9 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clientLength = sizeof(cli_addr);
 
+    // Declare a request counter
+    int requestCounter = 0;
+
     // Begin accepting client connections as concurrent child processes
     while (1) {
 
@@ -57,18 +60,24 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
+        // Increment Request Counter
+        ++requestCounter;
+
         // Child: process a request and return a result
         if (pid == 0) {
 
-            // Close the original socket
+            // Close the original socket on this process
             close(socketDescriptor);
 
-            // Read in request
+            // Print request received message
+            printf("[%d] Request received.\n", requestCounter);
+
+            // Read in request through new socket
             char buffer[PACKET_REQUEST_SIZE];
             bzero(buffer, PACKET_REQUEST_SIZE);
             read(newSocketDescriptor, buffer, PACKET_REQUEST_SIZE);
 
-            // Prepare request components
+            // Declare request components
             uint8_t hash[32];
             uint64_t start;
             uint64_t end;
@@ -80,14 +89,14 @@ int main(int argc, char *argv[]) {
             memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
             memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
-            // Convert byte order
+            // Convert byte order as needed
             start = htobe64(start);
             end = htobe64(end);
 
-            // Debugging print
-            printf("Start: %llu\nEnd: %llu\n", start, end);
+            // Debugging print with start and end
+            // printf("Start: %llu\nEnd: %llu\n", start, end);
 
-            // Reverse hash
+            // Search for key in given range corresponding to given hash
             uint8_t calculatedHash[32];
             uint64_t key;
             for (uint64_t i = start; i < end; i++) {
@@ -104,9 +113,12 @@ int main(int argc, char *argv[]) {
             // Send resulting key back to client
             key = be64toh(key);
             write(newSocketDescriptor, &key, 8);
-            printf("SENT\n");
 
-            // Exit the child process
+            // Print response sent message
+            printf("[%d] Response Sent.\n", requestCounter);
+
+            // Clean up and exit the child process
+            close(newSocketDescriptor);
             exit(0);
         }
 
