@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
             exit(0);
         }
 
-            // Parent: close the new socket, then begin loop again
+        // Parent: close the new socket, then begin loop again
         else {
             close(newSocketDescriptor);
         }
