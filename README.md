@@ -2,7 +2,7 @@
 ### Wavy Gang - Sam Lonneman, Alana Vanzo, & Pedro Wachtendorff
 
 ## Experiment 1: Multithreading
-**Background**: The goal of this experiment is to determine whether multithreading is faster than using separate processes for each request. Our first working implementation for the milestone can be found on a branch called `milestone`. This implementation will serve as our control in this experiment.
+**Background**: The goal of this experiment is to determine whether multithreading is faster than using separate processes for each request. Our first working implementation for the milestone can be found on a branch called [milestone](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/milestone). This implementation will serve as the control in this experiment.
 
 **Hypothesis**: The implementation which uses one thread per request will score higher than the implementation which uses one process per request. We hypothesize this due to the assumption that creating a new thread is computationally easier than starting a new process because threads share a process' memory, so less memory will be copied at each step.
 
