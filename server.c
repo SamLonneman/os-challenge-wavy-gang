@@ -12,7 +12,7 @@
 #include "messages.h"
 
 
-// Takes in 32B hash, 8B start, 8B end, 1B p, and 4B newsockfd
+// Takes in pointer to argument on the heap: 49B client request plus 4B (int) newsockfd
 void* reverseHash(void *arg) {
 
     // Declare components of argument
@@ -97,12 +97,16 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
-        // Read in request through new socket
+        // Dynamically allocate memory for thread argument with room for request and newsockfd
         void *arg= malloc(PACKET_REQUEST_SIZE + sizeof(int));
+
+        // Read in request through new socket into thread argument
         read(newsockfd, arg, PACKET_REQUEST_SIZE);
+
+        // Copy newsockfd into thread argument
         memcpy(arg + PACKET_REQUEST_SIZE, &newsockfd, sizeof(int));
 
-        // Create thread to calculate and return response
+        // Create thread to calculate and return response to client
         pthread_t tid;
         pthread_create(&tid, NULL, reverseHash, arg);
     }
