@@ -18,19 +18,19 @@ For both implementations of the server, we will run `run-client-milestone.sh` 10
 ### Results
 The results of this experiment can be found in the table below.
 
-|   Run   | Processes | Threads  |
-|:-------:|:---------:|:--------:|
-|    1    | 11528773  | 15632364 |
-|    2    | 14962546  | 18699715 |
-|    3    |  9649223  | 16237716 |
-|    4    | 20546787  | 18379834 |
-|    5    |  8087227  | 9944169  |
-|    6    | 13734484  | 15402195 |
-|    7    | 19296649  | 18895384 |
-|    8    |  5059456  | 10246281 |
-|    9    | 15261579  | 7966930  |
-|   10    | 12454365  | 11688490 |
-| Average | 13058109  | 14309308 |
+|   Run   | Score (process-based implementation) | Score (thread-based implementation) |
+|:-------:|:------------------------------------:|:-----------------------------------:|
+|    1    |               11528773               |              15632364               |
+|    2    |               14962546               |              18699715               |
+|    3    |               9649223                |              16237716               |
+|    4    |               20546787               |              18379834               |
+|    5    |               8087227                |               9944169               |
+|    6    |               13734484               |              15402195               |
+|    7    |               19296649               |              18895384               |
+|    8    |               5059456                |              10246281               |
+|    9    |               15261579               |               7966930               |
+|   10    |               12454365               |              11688490               |
+| Average |               13058109               |              14309308               |
 
 ### Conclusion
 The results of our experiment above show a slight improvement in score of the implementation which uses threads when compared with the implementation which uses processes. However, after performing a statistical hypothesis test on this data with alpha=0.05, we conclude that the difference in these average scores is not statistically significant given our sample size, so there is insufficient evidence to reject the null hypothesis that both implementations score the same.
