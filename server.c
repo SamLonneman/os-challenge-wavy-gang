@@ -14,6 +14,8 @@
 
 #include <semaphore.h>  // included from https://www.geeksforgeeks.org/handling-multiple-clients-on-server-with-multithreading-using-socket-programming-in-c-cpp/
 
+// Experiment: Implementing threads with the use of Semaphores to facilitate a stable multiprocessing environment
+
 // NOTE: Some socket logic taken from https://www.tutorialspoint.com/unix_sockets/index.htm
 
 
@@ -23,9 +25,6 @@ int newsockfd;
 int sem_post(sem_t *sem); // increments the semaphore currently being pointed to
 int sem_wait(sem_t *sem); // decrements the semaphore currently being pointed to
 sem_t x, y;
-pthread_t tid;
-pthread_t writerthreads[100];
-pthread_t readerthreads[100];
 int readercount = 0;
 
 // CTRL+C interrupt handler for graceful termination
@@ -38,7 +37,7 @@ void terminationHandler(int sig) {
 
 
 // TODO: IMPLEMENT REVERSE HASHING WITH THREADS and move it back up before main
-void reverseHash(){
+void * reverseHash(void *arg){
 
     // Declare request components
     uint8_t hash[32];
@@ -47,10 +46,13 @@ void reverseHash(){
     uint8_t p;
 
     // Extract components from request
-    memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-    memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-    memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
-    memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+    memcpy(hash, arg + PACKET_REQUEST_HASH_OFFSET, 32);
+    memcpy(&start, arg + PACKET_REQUEST_START_OFFSET, 8);
+    memcpy(&end, arg + PACKET_REQUEST_END_OFFSET, 8);
+    memcpy(&p, arg + PACKET_REQUEST_PRIO_OFFSET, 1);
+    memcpy(&newsockfd, arg + PACKET_REQUEST_PRIO_OFFSET, sizeof(int));
+
+    free(arg)
 
     // Convert byte order as needed
     start = htobe64(start);
@@ -77,9 +79,9 @@ void reverseHash(){
     // Print response sent message
     printf("[%d] Response Sent.\n", requestCounter);
 
-    // Clean up and exit the child process TODO: Change this to work for threads
+    // Clean up and exit the thread
     close(newsockfd);
-    exit(0);
+    pthread_exit(NULL);
 }
 
 
@@ -122,7 +124,7 @@ void* reader(void* param)
 
 int main(int argc, char *argv[]) {
     signal(SIGINT, terminationHandler);         // Set up signal for graceful termination
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket
 
     // set up semaphore
     sem_init(&x, 0, 1);
@@ -161,19 +163,14 @@ int main(int argc, char *argv[]) {
     // Declare a request counter
     int requestCounter = 0;
 
+    // array for threads
+    pthread_t readerthreads[NUM_CONNNECTIONS];
+
 
     // Begin accepting client connections as concurrent threads
     while (1) {
-        // Accept connection
-        newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-
-        pthread_t thread;
-
-        int fd = *(int *) thread_data;             // close(sockfd);
-        free(thread_data)    // free the new socket, is this the same as close?
-
-        // Print request received message
-        printf("[%d] Request received.\n", requestCounter);
+        // Accept connection ( will take the first in the queue)
+        int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 
         // check for error
         if (newsockfd < 0) {
@@ -181,43 +178,42 @@ int main(int argc, char *argv[]) {
             exit(1); // exit when the newsockfd < 0 as no more requests
         }
 
+        // Print request received message and increment request counter
+        printf("[%d] Request received.\n", requestCounter);
+        requestCounter++
+
+
+        // choice = 1 for reader or 2 for writer but this client only sends things to be read
         int choice = 0;
         recv(newSocket, &choice, sizeof(choice), 0);
 
-        if (choice == 1) {
-            // Creater readers thread which will eventually call reverseHash()
-            if (pthread_create(&readerthreads[i++], NULL,
-                               reader, &newSocket)
-                != 0)
+        // Creater readers thread
+        if (pthread_create(&readerthreads[i++], NULL,
+                           reader, &newSocket)
+            != 0)
 
-                // Error in creating thread
-                printf("Failed to create thread\n");
-        }else{
-            printf("Failed to create thread\n");    // we do not need a writer thread for this server
-        }
+            // Error in creating thread
+            printf("Failed to create thread\n");
 
 
-        if (i >= 50) {
+        if (i >= NUM_CONNECTIONS) {
             // Update i
             i = 0;
 
             while (i < 50) {
-                // Suspend execution of
-                // the calling thread
-                // until the target
-                // thread terminates
-                pthread_join(writerthreads[i++],
-                             NULL);
+                // Suspend execution of the calling thread until the target thread terminates
                 pthread_join(readerthreads[i++],
                              NULL);
             }
-
             // Update i
             i = 0;
         }
         pthread_detach(thread);
     }
     return 0;
+
+    }
+
 }
 
 
