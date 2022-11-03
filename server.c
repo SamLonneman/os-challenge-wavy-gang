@@ -119,15 +119,10 @@ int main(int argc, char *argv[]) {
             // Search for key in given range corresponding to given hash
             uint8_t calculatedHash[32];
             uint64_t key;
-            for (uint64_t i = start; i < end; i++) {
-                SHA256_CTX sha256;
-                SHA256_Init(&sha256);
-                SHA256_Update(&sha256, &i, 8);
-                SHA256_Final(calculatedHash, &sha256);
-                if (memcmp(hash, calculatedHash, 32) == 0) {
-                    key = i;
+            for (key = start; key < end; key++) {
+                SHA256((uint8_t *)&key, 8, calculatedHash);
+                if (memcmp(hash, calculatedHash, 32) == 0)
                     break;
-                }
             }
 
             // Send resulting key back to client
