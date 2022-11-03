@@ -34,7 +34,6 @@ int requestCounter = 0;
 // CTRL+C interrupt handler for graceful termination
 void terminationHandler(int sig) {
     close(sockfd);
-    close(newsockfd);
     exit(0);
 }
 
@@ -83,7 +82,7 @@ void * reverseHash(void *arg){
 
     // Clean up and exit the thread
     close(newsockfd);
-    pthread_exit(NULL);
+    pthread_kill;
 }
 
 
@@ -173,6 +172,7 @@ int main(int argc, char *argv[]) {
     while (1) {
         // Accept connection ( will take the first in the queue)
         int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        int newSocket;
 
         // check for error
         if (newsockfd < 0) {
@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
 
         // Print request received message and increment request counter
         printf("[%d] Request received.\n", requestCounter);
-        requestCounter++
+        requestCounter++;
 
 
         // choice = 1 for reader or 2 for writer but this client only sends things to be read
