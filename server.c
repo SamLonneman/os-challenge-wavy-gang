@@ -15,17 +15,21 @@
 #include <semaphore.h>  // included from https://www.geeksforgeeks.org/handling-multiple-clients-on-server-with-multithreading-using-socket-programming-in-c-cpp/
 
 // Experiment: Implementing threads with the use of Semaphores to facilitate a stable multiprocessing environment
+                // semaphore count indicates the number of free resources
+                // can potentially be adjusted to allow max priority access to free resources
+                // threads open in all free resources
 
 // NOTE: Some socket logic taken from https://www.tutorialspoint.com/unix_sockets/index.htm
 
 
 // Socket variables are global so that they can be closed by handler.
 int sockfd;               // holds the return of the socket function
-int newsockfd;
 int sem_post(sem_t *sem); // increments the semaphore currently being pointed to
 int sem_wait(sem_t *sem); // decrements the semaphore currently being pointed to
 sem_t x, y;
 int readercount = 0;
+// Declare a request counter globally as it is used in multiple functions
+int requestCounter = 0;
 
 // CTRL+C interrupt handler for graceful termination
 void terminationHandler(int sig) {
@@ -41,6 +45,7 @@ void * reverseHash(void *arg){
     uint64_t start;
     uint64_t end;
     uint8_t p;
+    int newsockfd;
 
     // Extract components from request
     memcpy(hash, arg + PACKET_REQUEST_HASH_OFFSET, 32);
@@ -49,7 +54,7 @@ void * reverseHash(void *arg){
     memcpy(&p, arg + PACKET_REQUEST_PRIO_OFFSET, 1);
     memcpy(&newsockfd, arg + PACKET_REQUEST_PRIO_OFFSET, sizeof(int));
 
-    free(arg)
+    free(arg);
 
     // Convert byte order as needed
     start = htobe64(start);
@@ -98,7 +103,7 @@ void* reader(void* param)
     sem_post(&x);
 
     // call reverse hash
-    reverseHash()
+    reverseHash(param);
 
     // Lock the semaphore
     sem_wait(&x);
@@ -121,7 +126,7 @@ void* reader(void* param)
 
 int main(int argc, char *argv[]) {
     printf("Inside Alana's Server");
-    signal(SIGINT, terminationHandler);         // Set up signal for graceful termination
+    signal(SIGINT, terminationHandler);                     // Set up signal for graceful termination
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket
 
     // set up semaphore
@@ -143,7 +148,7 @@ int main(int argc, char *argv[]) {
 
     // Bind to host address
     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-        perror("ERROR on binding");
+        perror("ERROR when accepting");
         exit(1);
     }
 
@@ -158,11 +163,10 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr);
 
-    // Declare a request counter
-    int requestCounter = 0;
+
 
     // array for threads
-    pthread_t readerthreads[NUM_CONNNECTIONS];
+    pthread_t readerthreads[NUM_CONNECTIONS];
 
 
     // Begin accepting client connections as concurrent threads
@@ -182,7 +186,6 @@ int main(int argc, char *argv[]) {
 
 
         // choice = 1 for reader or 2 for writer but this client only sends things to be read
-        int choice = 0;
         recv(newSocket, &choice, sizeof(choice), 0);
 
         // Creater readers thread
@@ -204,8 +207,6 @@ int main(int argc, char *argv[]) {
         }
         pthread_detach(pread);
     }
-    return 0;
-
     }
 
 
