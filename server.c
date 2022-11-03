@@ -34,9 +34,6 @@ void terminationHandler(int sig) {
     exit(0);
 }
 
-
-
-// TODO: IMPLEMENT REVERSE HASHING WITH THREADS and move it back up before main
 void * reverseHash(void *arg){
 
     // Declare request components
@@ -123,6 +120,7 @@ void* reader(void* param)
 
 
 int main(int argc, char *argv[]) {
+    printf("Inside Alana's Server");
     signal(SIGINT, terminationHandler);         // Set up signal for graceful termination
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket
 
