@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
             close(sockfd);
 
             // Print request received message
-            printf("[%d] Request received.\n", requestCounter);
+            // printf("[%d] Request received.\n", requestCounter);
 
             // Read in request through new socket
             char buffer[PACKET_REQUEST_SIZE];
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
             write(newsockfd, &key, 8);
 
             // Print response sent message
-            printf("[%d] Response Sent.\n", requestCounter);
+            // printf("[%d] Response Sent.\n", requestCounter);
 
             // Clean up and exit the child process
             close(newsockfd);
