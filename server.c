@@ -186,13 +186,9 @@ int main(int argc, char *argv[]) {
         recv(newSocket, &choice, sizeof(choice), 0);
 
         // Creater readers thread
-        if (pthread_create(&readerthreads[i++], NULL,
-                           reader, &newSocket)
-            != 0)
-
+        if (pthread_create(&readerthreads[i++], NULL,reader, &newSocket) != 0)
             // Error in creating thread
             printf("Failed to create thread\n");
-
 
         if (i >= NUM_CONNECTIONS) {
             // Update i
@@ -206,13 +202,13 @@ int main(int argc, char *argv[]) {
             // Update i
             i = 0;
         }
-        pthread_detach(thread);
+        pthread_detach(pread);
     }
     return 0;
 
     }
 
-}
+
 
 
 
