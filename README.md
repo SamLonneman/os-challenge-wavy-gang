@@ -36,10 +36,10 @@ The results of this experiment can be found in the table below.
 | Average |      7331031       |      5424667       |
 
 ### Conclusion
-
+As shown by the results above, the average score of Solution_2 was lower than the average score of Solution_0. After performing a statistical hypothesis test with alpha=0.05, we received a P-value of less than 0.0001%, so we can certainly reject the null hypothesis that Solution_2 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
 
 ### Discussion
-
+The conclusion provides evidence that limiting the number of processes to the number of cores is statistically significantly faster than creating a new process for each request. This result makes sense and supports our hypothesis for the reason explained in our rationale.
 
 ### Improvements
 In Solution_2, each process reverse hashes the request which is next in the FIFO queue from the client. Perhaps this solution could be improved by storing each request in a priority queue and instructing each process to take the request with the highest priority.
