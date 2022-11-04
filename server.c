@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
             memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
             // Set process priority
-            nice(17 - p);
+            nice(16 - p);
 
             // Convert byte order as needed
             start = htobe64(start);
