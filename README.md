@@ -36,7 +36,7 @@ The results of this experiment can be found in the table below.
 | Average |      7331031       |      6922758       |
 
 ### Conclusion
-As shown by the results above, the average score of Solution_3 was lower than the average score of Solution_1. After performing a statistical hypothesis test with alpha=0.05, we received a P-value of less than 0.0001%, so we can certainly reject the null hypothesis that Solution_3 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
+As shown by the results above, the average score of Solution_3 was lower than the average score of Solution_0. After performing a statistical hypothesis test with alpha=0.05, we received a P-value of less than 0.0001%, so we can certainly reject the null hypothesis that Solution_3 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
 
 ### Discussion
 The conclusion provides evidence that priority scheduling with "nice values" is statistically significantly faster than ignoring priority. This result makes sense. After all, the same number of processes is created in the same order as before. The only difference is that the scheduler now selects higher priority requests more often than lower priority requests, improving performance without any significant downside. Note that this method is only useful in situations where there are more processes than available cores, a situation which may already be undesirable due to the increased time spent switching between processes. So, it seems likely that other solutions will be better for our final implementation.
