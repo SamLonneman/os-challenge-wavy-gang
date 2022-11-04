@@ -1,15 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <netdb.h>
 #include <netinet/in.h>
-
 #include <openssl/sha.h>
-
 #include <signal.h>
 #include <unistd.h>
-
 #include "messages.h"
 
 // NOTE: Some socket logic taken from https://www.tutorialspoint.com/unix_sockets/index.htm
@@ -60,10 +56,11 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr);
 
-    // Declare a request counter
-    int requestCounter = 0;
+    // Fork into 4 processes, one for each core
+    fork();
+    fork();
 
-    // Begin accepting client connections as concurrent child processes
+    // Each process will accept a request, calculate and return a result, and accept a new request, etc.
     while (1) {
 
         // Accept connection and check for error
@@ -73,74 +70,42 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
-        // Fork off a child process and check for error
-        int pid = fork();
-        if (pid < 0) {
-            perror("ERROR on fork");
-            exit(1);
+        // Read in request through new socket
+        char buffer[PACKET_REQUEST_SIZE];
+        bzero(buffer, PACKET_REQUEST_SIZE);
+        read(newsockfd, buffer, PACKET_REQUEST_SIZE);
+
+        // Declare request components
+        uint8_t hash[32];
+        uint64_t start;
+        uint64_t end;
+        uint8_t p;
+
+        // Extract components from request
+        memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+        memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+        memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+        memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+
+        // Convert byte order
+        start = htobe64(start);
+        end = htobe64(end);
+
+        // Search for key in given range corresponding to given hash
+        uint8_t calculatedHash[32];
+        uint64_t key;
+        for (key = start; key < end; key++) {
+            SHA256((uint8_t *)&key, 8, calculatedHash);
+            if (memcmp(hash, calculatedHash, 32) == 0)
+                break;
         }
 
-        // Increment Request Counter
-        ++requestCounter;
+        // Send resulting key back to client
+        key = be64toh(key);
+        write(newsockfd, &key, 8);
 
-        // Child: process a request and return a result
-        if (pid == 0) {
-
-            // Close the original socket on this process
-            close(sockfd);
-
-            // Print request received message
-            // printf("[%d] Request received.\n", requestCounter);
-
-            // Read in request through new socket
-            char buffer[PACKET_REQUEST_SIZE];
-            bzero(buffer, PACKET_REQUEST_SIZE);
-            read(newsockfd, buffer, PACKET_REQUEST_SIZE);
-
-            // Declare request components
-            uint8_t hash[32];
-            uint64_t start;
-            uint64_t end;
-            uint8_t p;
-
-            // Extract components from request
-            memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-            memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-            memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
-            memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
-
-            // Convert byte order as needed
-            start = htobe64(start);
-            end = htobe64(end);
-
-            // Debugging print with start and end
-            // printf("Start: %llu\nEnd: %llu\n", start, end);
-
-            // Search for key in given range corresponding to given hash
-            uint8_t calculatedHash[32];
-            uint64_t key;
-            for (key = start; key < end; key++) {
-                SHA256((uint8_t *)&key, 8, calculatedHash);
-                if (memcmp(hash, calculatedHash, 32) == 0)
-                    break;
-            }
-
-            // Send resulting key back to client
-            key = be64toh(key);
-            write(newsockfd, &key, 8);
-
-            // Print response sent message
-            // printf("[%d] Response Sent.\n", requestCounter);
-
-            // Clean up and exit the child process
-            close(newsockfd);
-            exit(0);
-        }
-
-        // Parent: close the new socket, then begin loop again
-        else {
-            close(newsockfd);
-        }
+        // Close the socket
+        close(newsockfd);
     }
 
     return 0;
