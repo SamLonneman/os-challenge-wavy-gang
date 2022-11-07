@@ -1,67 +1,36 @@
-// NOTE: We used some socket logic from https://www.tutorialspoint.com/unix_sockets/index.htm
-
-#include <netdb.h>
-#include <netinet/in.h>
-#include <openssl/sha.h>
-#include <pthread.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <openssl/sha.h>
+#include <signal.h>
 #include <unistd.h>
 #include "messages.h"
 
+// NOTE: Some socket logic taken from https://www.tutorialspoint.com/unix_sockets/index.htm
 
-// Takes in pointer to int newsockfd on the heap
-void* reverseHash(void *newsockfdPtr) {
 
-    // Get newsockfd and deallocate it from the heap
-    int newsockfd = *(int*)newsockfdPtr;
-    free(newsockfdPtr);
+// Socket variables are global so that they can be closed by handler.
+int sockfd;
+int newsockfd;
 
-    // Read in request through new socket
-    uint8_t buffer[PACKET_REQUEST_SIZE];
-    read(newsockfd, buffer, PACKET_REQUEST_SIZE);
-
-    // Extract components from request
-    uint8_t hash[32];
-    uint64_t start;
-    uint64_t end;
-    uint8_t p;
-    memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-    memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-    memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
-    memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
-
-    // Convert start and end byte order
-    start = htobe64(start);
-    end = htobe64(end);
-
-    // Search for key in given range corresponding to given hash
-    uint8_t calculatedHash[32];
-    uint64_t key;
-    for (key = start; key < end; key++) {
-        SHA256((uint8_t *)&key, 8, calculatedHash);
-        if (memcmp(hash, calculatedHash, 32) == 0)
-            break;
-    }
-
-    // Send resulting key back to client
-    key = be64toh(key);
-    write(newsockfd, &key, 8);
-
-    // Close socket and exit
+// CTRL+C interrupt handler for graceful termination
+void terminationHandler(int sig) {
+    close(sockfd);
     close(newsockfd);
-    pthread_exit(NULL);
+    exit(0);
 }
 
-// Start server
 int main(int argc, char *argv[]) {
 
-    // Create socket
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    // Set up signal for graceful termination
+    signal(SIGINT, terminationHandler);
 
-    // Set the port as available in case it is not available, and check for error
+    // Create socket
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+    // Setting the port available in case it is not
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
         perror("setsockopt(SO_REUSEADDR) failed");
         exit(1);
@@ -74,7 +43,7 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(atoi(argv[1]));
 
-    // Bind to host address, and check for error
+    // Bind to host address
     if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR on binding");
         exit(1);
@@ -83,26 +52,61 @@ int main(int argc, char *argv[]) {
     // Listen for client
     listen(sockfd, 100);
 
-    // Prepare client address and size
+    // Declare client address and size
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr);
 
-    // Accept client connections and assign each request to a thread
+    // Fork into 4 processes, one for each core
+    fork();
+    fork();
+
+    // Each process will accept a request, calculate and return a result, and accept a new request, etc.
     while (1) {
 
-        // Accept connection, and check for error
-        int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        // Accept connection and check for error
+        newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         if (newsockfd < 0) {
             perror("ERROR on accept");
             exit(1);
         }
 
-        // Temporarily place newsockfd on the heap
-        int *newsockfdPtr = malloc(sizeof(int));
-        memcpy(newsockfdPtr, &newsockfd, sizeof(int));
+        // Read in request through new socket
+        char buffer[PACKET_REQUEST_SIZE];
+        bzero(buffer, PACKET_REQUEST_SIZE);
+        read(newsockfd, buffer, PACKET_REQUEST_SIZE);
 
-        // Create thread to calculate and return response to client
-        pthread_t tid;
-        pthread_create(&tid, NULL, reverseHash, newsockfdPtr);
+        // Declare request components
+        uint8_t hash[32];
+        uint64_t start;
+        uint64_t end;
+        uint8_t p;
+
+        // Extract components from request
+        memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+        memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+        memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+        memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+
+        // Convert byte order
+        start = htobe64(start);
+        end = htobe64(end);
+
+        // Search for key in given range corresponding to given hash
+        uint8_t calculatedHash[32];
+        uint64_t key;
+        for (key = start; key < end; key++) {
+            SHA256((uint8_t *)&key, 8, calculatedHash);
+            if (memcmp(hash, calculatedHash, 32) == 0)
+                break;
+        }
+
+        // Send resulting key back to client
+        key = be64toh(key);
+        write(newsockfd, &key, 8);
+
+        // Close the socket
+        close(newsockfd);
     }
+
+    return 0;
 }
