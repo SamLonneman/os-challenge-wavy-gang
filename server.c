@@ -12,29 +12,30 @@
 #include "messages.h"
 
 
-// Takes in pointer to argument on the heap: 49B client request plus 4B (int) newsockfd
-void* reverseHash(void *arg) {
+// Takes in pointer to int newsockfd on the heap
+void* reverseHash(void *newsockfdPtr) {
 
-    // Declare components of argument
+    // Get newsockfd and deallocate it from the heap
+    int newsockfd = *(int*)newsockfdPtr;
+    free(newsockfdPtr);
+
+    // Read in request through new socket
+    uint8_t buffer[PACKET_REQUEST_SIZE];
+    read(newsockfd, buffer, PACKET_REQUEST_SIZE);
+
+    // Extract components from request
     uint8_t hash[32];
     uint64_t start;
     uint64_t end;
     uint8_t p;
-    int newsockfd;
-
-    // Extract components from argument
-    memcpy(hash, arg + PACKET_REQUEST_HASH_OFFSET, 32);
-    memcpy(&start, arg + PACKET_REQUEST_START_OFFSET, 8);
-    memcpy(&end, arg + PACKET_REQUEST_END_OFFSET, 8);
-    memcpy(&p, arg + PACKET_REQUEST_PRIO_OFFSET, 1);
-    memcpy(&newsockfd, arg + PACKET_REQUEST_SIZE, sizeof(int));
+    memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+    memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+    memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+    memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
     // Convert start and end byte order
     start = htobe64(start);
     end = htobe64(end);
-
-    // Deallocate arg memory
-    free(arg);
 
     // Search for key in given range corresponding to given hash
     uint8_t calculatedHash[32];
@@ -96,17 +97,12 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
-        // Dynamically allocate memory for thread argument with room for request and newsockfd
-        void *arg= malloc(PACKET_REQUEST_SIZE + sizeof(int));
-
-        // Read in request through new socket into thread argument
-        read(newsockfd, arg, PACKET_REQUEST_SIZE);
-
-        // Copy newsockfd into thread argument
-        memcpy(arg + PACKET_REQUEST_SIZE, &newsockfd, sizeof(int));
+        // Temporarily place newsockfd on the heap
+        int *newsockfdPtr = malloc(sizeof(int));
+        memcpy(newsockfdPtr, &newsockfd, sizeof(int));
 
         // Create thread to calculate and return response to client
         pthread_t tid;
-        pthread_create(&tid, NULL, reverseHash, arg);
+        pthread_create(&tid, NULL, reverseHash, newsockfdPtr);
     }
 }
