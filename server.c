@@ -29,21 +29,20 @@ void* reverseHash(void *arg) {
     memcpy(&p, arg + PACKET_REQUEST_PRIO_OFFSET, 1);
     memcpy(&newsockfd, arg + PACKET_REQUEST_SIZE, sizeof(int));
 
+    // Convert start and end byte order
+    start = htobe64(start);
+    end = htobe64(end);
+
     // Deallocate arg memory
     free(arg);
 
     // Search for key in given range corresponding to given hash
     uint8_t calculatedHash[32];
     uint64_t key;
-    for (uint64_t i = htobe64(start); i < htobe64(end); i++) {
-        SHA256_CTX sha256;
-        SHA256_Init(&sha256);
-        SHA256_Update(&sha256, &i, sizeof(uint64_t));
-        SHA256_Final(calculatedHash, &sha256);
-        if (memcmp(hash, calculatedHash, 32) == 0) {
-            key = i;
+    for (key = start; key < end; key++) {
+        SHA256((uint8_t *)&key, 8, calculatedHash);
+        if (memcmp(hash, calculatedHash, 32) == 0)
             break;
-        }
     }
 
     // Send resulting key back to client
