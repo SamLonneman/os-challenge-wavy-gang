@@ -19,6 +19,9 @@
                 // can potentially be adjusted to allow max priority access to free resources
                 // threads open in all free resources
 
+// Hypothesis: Theoretically this should be faster than the milestone which was process based however experiment 1 makes us question this
+                // unsure whether the use of semaphores specifically in the implementation of threads will increase or decrease speed
+
 // Multithreading: singular process with multiple threads of control
                 // Threads share resources (same address space) and should therefore be more efficient than processes
                 // Faster to switch and creat/terminate
