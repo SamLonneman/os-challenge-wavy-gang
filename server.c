@@ -218,11 +218,6 @@ int main(int argc, char *argv[]) {
                 printf("Failed to create thread\n");
         }
         else if (choice == 2) {
-            // Create writers thread
-            if (pthread_create(&writerthreads[i++], NULL,
-                               writer, &newSocket)
-                != 0)
-
                 // Error in creating thread
                 printf("Failed to create thread\n");
         }
