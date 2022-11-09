@@ -40,9 +40,12 @@ int readercount = 0;
 pthread_t readerthreads[100];
 pthread_t tid;
 int requestCounter = 0;
+
+
+
 // set up semaphore
-sem_init(&x, 0, 1);
-sem_init(&y, 0, 1);
+//sem_init(&x, 0, 1);
+//sem_init(&y, 0, 1);
 
 
 void * reverseHash(void *arg){
@@ -102,17 +105,17 @@ void* reader(void* param)
     printf("[%d] Request received to reader.\n", requestCounter);
 
     // Lock the semaphore
-    sem_wait(&x);       // this is where we are errorring
+    //sem_wait(&x);       // this is where we are errorring
     printf("line 103");
     readercount++;
     printf("line 105");
 
-    if (readercount == 1)
-        sem_wait(&y);
+    //if (readercount == 1)
+    //    sem_wait(&y);
     printf("line 109");
 
     // Unlock the semaphore
-    sem_post(&x);
+    //sem_post(&x);
     printf("line 113");
 
     printf("Before reverse hash call");
@@ -121,15 +124,15 @@ void* reader(void* param)
     printf("After reverse hash call");
 
     // Lock the semaphore
-    sem_wait(&x);
-    readercount--;
+    //sem_wait(&x);
+    //readercount--;
 
-    if (readercount == 0) {
-        sem_post(&y);
-    }
+    //if (readercount == 0) {
+    //    sem_post(&y);
+    //}
 
     // Lock the semaphore
-    sem_post(&x);
+    //sem_post(&x);
 
     // kill the thread
     pthread_kill;
