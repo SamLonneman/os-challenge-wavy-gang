@@ -211,19 +211,9 @@ int main(int argc, char *argv[]) {
         printf("%d size of choice.\n", sizeof(choice));
         printf("%d choice.\n", choice);
 
-        if (choice == 1) {
-            // Creater readers thread
-            if (pthread_create(&readerthreads[i++], NULL,
-                               reader, &newSockFd)
+        pthread_create(&readerthreads[i++], NULL, reader, &newSockFd)
                 != 0)
 
-                // Error in creating thread
-                printf("Failed to create thread\n");
-        }
-        else if (choice == 2) {
-                // Error in creating thread
-                printf("Failed to create thread\n");
-        }
 
         if (i >= NUM_CONNECTIONS) {
             i = 0;
