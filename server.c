@@ -215,7 +215,7 @@ int main(int argc, char *argv[]) {
         printf("%d size of choice.\n", sizeof(choice));
         printf("%d choice.\n", choice);
 
-        pthread_t readerthreads
+        pthread_t readerthreads;
         pthread_create(&readerthreads, NULL, reader, &newSockFd);
     }
     return 0;
