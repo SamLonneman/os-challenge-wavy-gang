@@ -232,7 +232,6 @@ int main(int argc, char *argv[]) {
             i = 0;
         }
     }
-    pthread_detach();
     return 0;
     }
 
