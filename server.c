@@ -104,7 +104,7 @@ void* reader(void* param)
 {
     printf("[%d] Request received to reader.\n", requestCounter);
     if(param == NULL){
-        printf("empty parameter")
+        printf("empty parameter");
     }
 
     // Lock the semaphore
