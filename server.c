@@ -96,6 +96,7 @@ void * reverseHash(void *arg){
 // function to read from client
 void* reader(void* param)
 {
+    printf("[%d] Request received to reader.\n", requestCounter);
     // Lock the semaphore
     sem_wait(&x);
     readercount++;
