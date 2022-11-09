@@ -12,6 +12,11 @@
 
 #include "messages.h"
 
+#include <arpa/inet.h>
+
+#include <pthread.h>
+#include <sys/socket.h>
+
 #include <semaphore.h>  // included from https://www.geeksforgeeks.org/handling-multiple-clients-on-server-with-multithreading-using-socket-programming-in-c-cpp/
 
 // Experiment: Implementing threads with the use of Semaphores to facilitate a stable multiprocessing environment
