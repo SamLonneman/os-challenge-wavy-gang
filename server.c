@@ -51,7 +51,7 @@ void* reader(void* param)
 {
     printf("test");
     printf("hello");
-    printf("[%d] Request received to reader!\n", requestCounter);
+    //printf("[%d] Request received to reader!\n", requestCounter);
 
 
     // Lock the semaphore
