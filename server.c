@@ -97,6 +97,7 @@ void * reverseHash(void *arg){
 void* reader(void* param)
 {
     printf("[%d] Request received to reader.\n", requestCounter);
+
     // Lock the semaphore
     sem_wait(&x);
     readercount++;
@@ -205,18 +206,25 @@ int main(int argc, char *argv[]) {
         requestCounter++;
 
         int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
-        recv(newSocket,
-             &choice, sizeof(choice), 0);
+        recv(newSocket,&choice, sizeof(choice), 0);
+
+        // print choice
+        printf("[%d] Choice.\n", choice);
 
 
         if (choice == 1) {
-            // Creater readers thread
+            // Created readers thread
             if (pthread_create(&readerthreads[i++], NULL,
                                reader, &newSocket)
-                != 0)
+                != 0){
 
+            }
+            else{
                 // Error in creating thread
                 printf("Failed to create thread\n");
+            }
+
+
         } else if (choice == 2) {
             // Error in creating thread as there should not be any writes from client
             printf("Failed to create thread\n");
