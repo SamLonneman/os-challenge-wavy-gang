@@ -27,20 +27,14 @@
                 // Faster to switch and creat/terminate
 
 
-// Socket variables are global so that they can be closed by handler.
-int sockfd;               // holds the return of the socket function
 int sem_post(sem_t *sem); // increments the semaphore currently being pointed to
 int sem_wait(sem_t *sem); // decrements the semaphore currently being pointed to
 sem_t x, y;
 int readercount = 0;
-// Declare a request counter globally as it is used in multiple functions
+pthread_t readerthreads[100];
+pthread_t tid;
 int requestCounter = 0;
 
-// CTRL+C interrupt handler for graceful termination
-void terminationHandler(int sig) {
-    close(sockfd);
-    exit(0);
-}
 
 void * reverseHash(void *arg){
 
@@ -106,7 +100,7 @@ void* reader(void* param)
     // Unlock the semaphore
     sem_post(&x);
 
-    // call reverse hash
+    // call reverse hash while in reader mode
     reverseHash(param);
 
     // Lock the semaphore
@@ -120,6 +114,7 @@ void* reader(void* param)
     // Lock the semaphore
     sem_post(&x);
 
+    // kill the thread
     pthread_kill;
 }
 
@@ -129,13 +124,27 @@ void* reader(void* param)
 
 
 int main(int argc, char *argv[]) {
-    printf("Inside Alana's Server");
-    signal(SIGINT, terminationHandler);                     // Set up signal for graceful termination
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket
 
+    int sockfd;               // holds the return of the socket function
+    int newSockFd;
+
+    socklen_t addr_size;
     // set up semaphore
     sem_init(&x, 0, 1);
     sem_init(&y, 0, 1);
+
+    // Initialize socket structure
+    struct sockaddr_in serv_addr;
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket
+
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_port = htons(atoi(argv[1]));
+
+    printf("Inside Alana's Server");
+
 
     // Setting the port available in case it is not
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int)) < 0) {
@@ -143,66 +152,70 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    // Initialize socket structure
-    struct sockaddr_in serv_addr;
-    bzero((char *) &serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(atoi(argv[1]));
-
     // Bind to host address
     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR when accepting");
         exit(1);
     }
 
+
+
+
+
+    // Declare client address and size
+    struct sockaddr_in cli_addr;
+    int clilen = sizeof(cli_addr); // ### should NUM_CONNECTIONS = clilen?
+
+
+
     int NUM_CONNECTIONS;                // number of connections
-    NUM_CONNECTIONS = 100;              // set to 100 for testing purposes
+    NUM_CONNECTIONS = 50;              // set to 50 for testing purposes
     pthread_t tid[NUM_CONNECTIONS];     // array to store each unique ID for threads
 
 
     listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
 
-    // Declare client address and size
-    struct sockaddr_in cli_addr;
-    int clilen = sizeof(cli_addr);
-
-
-
-    // array for threads
-    pthread_t readerthreads[NUM_CONNECTIONS];
 
     // initialise i to 0 (will act as a thread counter)
     i = 0
 
     // Begin accepting client connections as concurrent threads
     while (1) {
-        i++
+
         // Accept connection ( will take the first in the queue)
-        int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        int newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         int newSocket;
 
         // check for error
-        if (newsockfd < 0) {
+        if (newSockFd < 0) {
             perror("ERROR on accept");
             exit(1); // exit when the newsockfd < 0 as no more requests
         }
+
 
         // Print request received message and increment request counter
         printf("[%d] Request received.\n", requestCounter);
         requestCounter++;
 
+        int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
+        recv(newSocket,
+             &choice, sizeof(choice), 0);
 
-        // choice = 1 for reader or 2 for writer but this client only sends things to be read
-        recv(newSocket, 1, sizeof(choice), 0);
 
-        // Create readers thread
-        if (pthread_create(&readerthreads[i++], NULL,reader, &newSocket) != 0)
-            // Error in creating thread
+        if (choice == 1) {
+            // Creater readers thread
+            if (pthread_create(&readerthreads[i++], NULL,
+                               reader, &newSocket)
+                != 0)
+
+                // Error in creating thread
+                printf("Failed to create thread\n");
+        } else if (choice == 2) {
+            // Error in creating thread as there should not be any writes from client
             printf("Failed to create thread\n");
+        }
 
         if (i >= NUM_CONNECTIONS) {
-            // Update i
             i = 0;
 
             while (i < 50) {
@@ -213,9 +226,11 @@ int main(int argc, char *argv[]) {
             // Update i
             i = 0;
         }
-        pthread_detach();
     }
+    pthread_detach();
+    return 0;
     }
+
 
 
 
