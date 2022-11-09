@@ -103,7 +103,9 @@ void * reverseHash(void *arg){
 void* reader(void* param)
 {
     printf("[%d] Request received to reader.\n", requestCounter);
-    printf("%p", param);
+    if(param == NULL){
+        printf("empty parameter")
+    }
 
     // Lock the semaphore
     //sem_wait(&x);       // this is where we are errorring
