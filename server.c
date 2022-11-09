@@ -37,8 +37,6 @@
 //int sem_wait(sem_t *sem); // decrements the semaphore currently being pointed to
 sem_t x, y;
 int readercount = 0;
-pthread_t readerthreads[100];
-pthread_t tid;
 int requestCounter = 0;
 
 
@@ -48,7 +46,28 @@ int requestCounter = 0;
 //sem_init(&y, 0, 1);
 
 
-void * reverseHash(void *arg){
+// function to read from client
+void* reader(void* param)
+{
+    printf("[%d] Request received to reader.\n", requestCounter);
+
+    // Lock the semaphore
+    //sem_wait(&x);       // this is where we are errorring
+    printf("line 103");
+    readercount++;
+    printf("line 105");
+
+    //if (readercount == 1)
+    //    sem_wait(&y);
+    printf("line 109");
+
+    // Unlock the semaphore
+    //sem_post(&x);
+    printf("line 113");
+
+
+
+    //////// REVERSE HASH FUNCTION
 
     // Declare request components
     uint8_t hash[32];
@@ -58,13 +77,13 @@ void * reverseHash(void *arg){
     int newsockfd;
 
     // Extract components from request
-    memcpy(hash, arg + PACKET_REQUEST_HASH_OFFSET, 32);
-    memcpy(&start, arg + PACKET_REQUEST_START_OFFSET, 8);
-    memcpy(&end, arg + PACKET_REQUEST_END_OFFSET, 8);
-    memcpy(&p, arg + PACKET_REQUEST_PRIO_OFFSET, 1);
-    memcpy(&newsockfd, arg + PACKET_REQUEST_PRIO_OFFSET, sizeof(int));
+    memcpy(hash, param + PACKET_REQUEST_HASH_OFFSET, 32);
+    memcpy(&start, param + PACKET_REQUEST_START_OFFSET, 8);
+    memcpy(&end, param + PACKET_REQUEST_END_OFFSET, 8);
+    memcpy(&p, param + PACKET_REQUEST_PRIO_OFFSET, 1);
+    memcpy(&newsockfd, param + PACKET_REQUEST_PRIO_OFFSET, sizeof(int));
 
-    free(arg);
+    free(param);
 
     // Convert byte order as needed
     start = htobe64(start);
@@ -94,37 +113,12 @@ void * reverseHash(void *arg){
     // Clean up and exit the thread
     close(newsockfd);
     pthread_kill;
-}
+
+    ///////////
 
 
 
 
-// function to read from client
-void* reader(void* param)
-{
-    printf("[%d] Request received to reader.\n", requestCounter);
-    if(param == NULL){
-        printf("empty parameter");
-    }
-
-    // Lock the semaphore
-    //sem_wait(&x);       // this is where we are errorring
-    printf("line 103");
-    readercount++;
-    printf("line 105");
-
-    //if (readercount == 1)
-    //    sem_wait(&y);
-    printf("line 109");
-
-    // Unlock the semaphore
-    //sem_post(&x);
-    printf("line 113");
-
-    printf("Before reverse hash call");
-    // call reverse hash while in reader mode
-    reverseHash(param);
-    printf("After reverse hash call");
 
     // Lock the semaphore
     //sem_wait(&x);
@@ -138,7 +132,6 @@ void* reader(void* param)
     //sem_post(&x);
 
     // kill the thread
-    pthread_kill;
 }
 
 
@@ -191,8 +184,6 @@ int main(int argc, char *argv[]) {
 
     int NUM_CONNECTIONS;                // number of connections
     NUM_CONNECTIONS = 55;              // set to 50 for testing purposes
-    pthread_t tid[NUM_CONNECTIONS];     // array to store each unique ID for threads
-
 
     listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
 
@@ -224,21 +215,8 @@ int main(int argc, char *argv[]) {
         printf("%d size of choice.\n", sizeof(choice));
         printf("%d choice.\n", choice);
 
-        pthread_create(&readerthreads[i++], NULL, reader, &newSockFd);
-
-
-
-        if (i >= NUM_CONNECTIONS) {
-            i = 0;
-
-            while (i < 50) {
-                // Suspend execution of the calling thread until the target thread terminates
-                pthread_join(readerthreads[i++],
-                             NULL);
-            }
-            // Update i
-            i = 0;
-        }
+        pthread_t readerthreads
+        pthread_create(&readerthreads, NULL, reader, &newSockFd);
     }
     return 0;
 }
