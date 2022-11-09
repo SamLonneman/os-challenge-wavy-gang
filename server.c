@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(atoi(argv[1]));
 
-    printf("Inside Alana's Server");
+    printf("Inside Alana's Server \n");
 
 
     // Setting the port available in case it is not
