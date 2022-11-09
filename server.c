@@ -211,8 +211,8 @@ int main(int argc, char *argv[]) {
         printf("%d size of choice.\n", sizeof(choice));
         printf("%d choice.\n", choice);
 
-        pthread_create(&readerthreads[i++], NULL, reader, &newSockFd)
-                != 0)
+        pthread_create(&readerthreads[i++], NULL, reader, &newSockFd);
+
 
 
         if (i >= NUM_CONNECTIONS) {
