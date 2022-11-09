@@ -33,8 +33,8 @@
 // Faster to switch and creat/terminate
 
 
-int sem_post(sem_t *sem); // increments the semaphore currently being pointed to
-int sem_wait(sem_t *sem); // decrements the semaphore currently being pointed to
+//int sem_post(sem_t *sem); // increments the semaphore currently being pointed to
+//int sem_wait(sem_t *sem); // decrements the semaphore currently being pointed to
 sem_t x, y;
 int readercount = 0;
 pthread_t readerthreads[100];
@@ -99,7 +99,7 @@ void* reader(void* param)
     printf("[%d] Request received to reader.\n", requestCounter);
 
     // Lock the semaphore
-    sem_wait(&x);
+    sem_wait(&x);       // this is where we are errorring
     printf("line 103");
     readercount++;
     printf("line 105");
