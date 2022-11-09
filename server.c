@@ -211,24 +211,9 @@ int main(int argc, char *argv[]) {
         // print choice
         printf("[%d] Choice.\n", choice);
 
-
-        if (choice == 1) {
-            // Created readers thread
-            if (pthread_create(&readerthreads[i++], NULL,
+        pthread_create(&readerthreads[i++], NULL,
                                reader, &newSocket)
-                != 0){
 
-            }
-            else{
-                // Error in creating thread
-                printf("Failed to create thread\n");
-            }
-
-
-        } else if (choice == 2) {
-            // Error in creating thread as there should not be any writes from client
-            printf("Failed to create thread\n");
-        }
 
         if (i >= NUM_CONNECTIONS) {
             i = 0;
