@@ -50,7 +50,7 @@ int requestCounter = 0;
 void* reader(void* param)
 {
     printf("[%d] Request received to reader!\n", requestCounter);
-    printf("test")
+    printf("test");
 
     // Lock the semaphore
     //sem_wait(&x);       // this is where we are errorring
