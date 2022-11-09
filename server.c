@@ -206,11 +206,9 @@ int main(int argc, char *argv[]) {
         requestCounter++;
 
         int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
-        recv(newSocket,&choice, sizeof(choice), 0);
+        recv(newSocket,&choice, sizeof(choice), 0); // ### this is where the problem is
 
-        // print choice
-        printf("[%d] Choice.\n", choice);
-
+        printf("%d choice", choice)
         pthread_create(&readerthreads[i++], NULL,
                                reader, &newSocket);
 
