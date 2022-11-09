@@ -108,10 +108,10 @@ void* reader(void* param)
     // Unlock the semaphore
     sem_post(&x);
 
-    printf("Before reverse hash call")
+    printf("Before reverse hash call");
     // call reverse hash while in reader mode
     reverseHash(param);
-    printf("After reverse hash call")
+    printf("After reverse hash call");
 
     // Lock the semaphore
     sem_wait(&x);
