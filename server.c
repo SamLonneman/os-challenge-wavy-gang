@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
 
 
     int NUM_CONNECTIONS;                // number of connections
-    NUM_CONNECTIONS = 50;              // set to 50 for testing purposes
+    NUM_CONNECTIONS = 55;              // set to 50 for testing purposes
     pthread_t tid[NUM_CONNECTIONS];     // array to store each unique ID for threads
 
 
