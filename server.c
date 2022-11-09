@@ -100,13 +100,17 @@ void* reader(void* param)
 
     // Lock the semaphore
     sem_wait(&x);
+    printf("line 103")
     readercount++;
+    printf("line 105")
 
     if (readercount == 1)
         sem_wait(&y);
+    printf("line 109")
 
     // Unlock the semaphore
     sem_post(&x);
+    printf("line 113")
 
     printf("Before reverse hash call");
     // call reverse hash while in reader mode
