@@ -191,9 +191,9 @@ int main(int argc, char *argv[]) {
 
 
         // choice = 1 for reader or 2 for writer but this client only sends things to be read
-        recv(newSocket, &choice, sizeof(choice), 0);
+        recv(newSocket, 1, sizeof(choice), 0);
 
-        // Creater readers thread
+        // Create readers thread
         if (pthread_create(&readerthreads[i++], NULL,reader, &newSocket) != 0)
             // Error in creating thread
             printf("Failed to create thread\n");
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
             // Update i
             i = 0;
         }
-        pthread_detach(pread);
+        pthread_detach();
     }
     }
 
