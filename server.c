@@ -40,6 +40,9 @@ int readercount = 0;
 pthread_t readerthreads[100];
 pthread_t tid;
 int requestCounter = 0;
+// set up semaphore
+sem_init(&x, 0, 1);
+sem_init(&y, 0, 1);
 
 
 void * reverseHash(void *arg){
@@ -143,9 +146,7 @@ int main(int argc, char *argv[]) {
     int newSockFd;
 
     socklen_t addr_size;
-    // set up semaphore
-    sem_init(&x, 0, 1);
-    sem_init(&y, 0, 1);
+
 
     // Initialize socket structure
     struct sockaddr_in serv_addr;
