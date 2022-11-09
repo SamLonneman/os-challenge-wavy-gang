@@ -212,7 +212,7 @@ int main(int argc, char *argv[]) {
         printf("[%d] Choice.\n", choice);
 
         pthread_create(&readerthreads[i++], NULL,
-                               reader, &newSocket)
+                               reader, &newSocket);
 
 
         if (i >= NUM_CONNECTIONS) {
