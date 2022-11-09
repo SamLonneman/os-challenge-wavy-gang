@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in serv_addr;
     bzero((char *) &serv_addr, sizeof(serv_addr));
 
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
 
 
     // initialise i to 0 (will act as a thread counter)
-    i = 0
+    int i = 0;
 
     // Begin accepting client connections as concurrent threads
     while (1) {
