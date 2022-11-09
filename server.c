@@ -208,10 +208,24 @@ int main(int argc, char *argv[]) {
         int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
         recv(newSocket,&choice, sizeof(choice), 0); // ### this is where the problem is
 
-        printf("%d choice", choice)
-        pthread_create(&readerthreads[i++], NULL,
-                               reader, &newSocket);
+        if (choice == 1) {
+            // Creater readers thread
+            if (pthread_create(&readerthreads[i++], NULL,
+                               reader, &newSocket)
+                != 0)
 
+                // Error in creating thread
+                printf("Failed to create thread\n");
+        }
+        else if (choice == 2) {
+            // Create writers thread
+            if (pthread_create(&writerthreads[i++], NULL,
+                               writer, &newSocket)
+                != 0)
+
+                // Error in creating thread
+                printf("Failed to create thread\n");
+        }
 
         if (i >= NUM_CONNECTIONS) {
             i = 0;
