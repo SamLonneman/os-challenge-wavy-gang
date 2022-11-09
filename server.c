@@ -57,7 +57,7 @@ void* reader(void* param)
     // Lock the semaphore
     //sem_wait(&x);       // this is where we are errorring
     printf("line 103");
-    readercount++;
+    //readercount++;
     printf("line 105");
 
     //if (readercount == 1)
