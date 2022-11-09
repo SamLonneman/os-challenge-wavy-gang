@@ -172,9 +172,12 @@ int main(int argc, char *argv[]) {
     // array for threads
     pthread_t readerthreads[NUM_CONNECTIONS];
 
+    // initialise i to 0 (will act as a thread counter)
+    i = 0
 
     // Begin accepting client connections as concurrent threads
     while (1) {
+        i++
         // Accept connection ( will take the first in the queue)
         int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         int newSocket;
