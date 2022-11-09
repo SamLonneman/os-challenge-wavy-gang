@@ -19,7 +19,9 @@
                 // can potentially be adjusted to allow max priority access to free resources
                 // threads open in all free resources
 
-// NOTE: Some socket logic taken from https://www.tutorialspoint.com/unix_sockets/index.htm
+// Multithreading: singular process with multiple threads of control
+                // Threads share resources (same address space) and should therefore be more efficient than processes
+                // Faster to switch and creat/terminate
 
 
 // Socket variables are global so that they can be closed by handler.
@@ -115,7 +117,7 @@ void* reader(void* param)
     // Lock the semaphore
     sem_post(&x);
 
-    pthread_exit(NULL);
+    pthread_kill;
 }
 
 
