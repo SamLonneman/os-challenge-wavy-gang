@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
 
         // Accept connection ( will take the first in the queue)
         int newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-        int newSocket;
+        //int newSocket;
 
         // check for error
         if (newSockFd < 0) {
@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
         requestCounter++;
 
         int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
-        recv(newSocket,&choice, sizeof(choice), 0); // ### this is where the problem is
+        recv(newSockFd,&choice, sizeof(choice), 0); // ### this is where the problem is
 
         printf("%d size of choice.\n", sizeof(choice));
         printf("%d choice.\n", choice);
@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
         if (choice == 1) {
             // Creater readers thread
             if (pthread_create(&readerthreads[i++], NULL,
-                               reader, &newSocket)
+                               reader, &newSockFd)
                 != 0)
 
                 // Error in creating thread
