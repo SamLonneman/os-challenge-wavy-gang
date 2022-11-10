@@ -96,7 +96,7 @@ void* reader(void* param)
     // Print response sent message
     printf("[%d] Response Sent ----\n", requestCounter);
     readercount--;
-    close(newSockFd);
+    //close(newSockFd);
     pthread_exit(NULL);
 }
 
