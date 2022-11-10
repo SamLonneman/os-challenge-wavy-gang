@@ -43,7 +43,7 @@ pthread_t tid;
 
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
-void* reader(void* newSockFdPtr)
+void* reader(void *newSockFdPtr)
 {
     printf("[%d] Request received to reader!\n", requestCounter);
 
