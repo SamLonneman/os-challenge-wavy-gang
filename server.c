@@ -44,21 +44,6 @@ pthread_t tid;
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
 void* reader(void* param)
-{
-    printf("[%d] Request received to reader!\n", requestCounter);
-
-    // Lock the semaphore
-    sem_wait(&x);
-    readercount++;
-
-    if (readercount == 1)
-        sem_wait(&y);
-
-    // Unlock the semaphore
-    sem_post(&x);
-
-    printf("\n%d reader is inside", readercount);
-
 
     int newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
 
@@ -107,40 +92,8 @@ void* reader(void* param)
     printf("[%d] Response Sent.\n", requestCounter);
 
 
-    // Lock the semaphore
-    sem_wait(&x);
-    readercount--;
-
-    if (readercount == 0) {
-        sem_post(&y);
-    }
-
-    // Lock the semaphore
-    sem_post(&x);
-
-    printf("\n%d Reader is leaving",
-           readercount + 1);
     close(newSockFd);
     pthread_exit(NULL);
-
-    ///////////
-
-
-
-
-
-    // Lock the semaphore
-    //sem_wait(&x);
-    //readercount--;
-
-    //if (readercount == 0) {
-    //    sem_post(&y);
-    //}
-
-    // Lock the semaphore
-    //sem_post(&x);
-
-    // kill the thread
 }
 
 
@@ -194,7 +147,7 @@ int main(int argc, char *argv[]) {
 
 
     int NUM_CONNECTIONS;                // number of connections
-    NUM_CONNECTIONS = 55;              // set to 50 for testing purposes
+    NUM_CONNECTIONS = 101;              // set to 50 for testing purposes
 
     listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
 
