@@ -57,9 +57,6 @@ void* reader(void* param)
     // Unlock the semaphore
     sem_post(&x);
 
-    printf("\n%d reader is inside", readercount);
-
-
     int newSockFd = *(int*)param;// retrieves the value of newSockFd from its address
 
     //////// REVERSE HASH FUNCTION
@@ -104,7 +101,7 @@ void* reader(void* param)
     write(newSockFd, &key, 8);
 
     // Print response sent message
-    printf("[%d] Response Sent.\n", requestCounter);
+    printf("[%d] Response Sent ---- %d\n", requestCounter, &key);
 
 
     // Lock the semaphore
