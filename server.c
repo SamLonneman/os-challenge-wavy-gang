@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
         // Print request received message and increment request counter
         printf("[%d] Request received.\n", requestCounter);
         requestCounter++;
-        pthread_create(&readerthreads[i++], NULL, reader, newsockfdPtr);
+        pthread_create(&readerthreads[i++], NULL, reader, newSockFdPtr);
     }
 
     return 0;
