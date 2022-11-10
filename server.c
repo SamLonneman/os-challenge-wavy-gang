@@ -60,7 +60,7 @@ void* reader(void* param)
     printf("\n%d reader is inside", readercount);
 
 
-    int newSockFd = *(param);// retrieves the value of newSockFd from its address
+    int newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
 
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
