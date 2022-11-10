@@ -43,14 +43,14 @@ pthread_t tid;
 
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
-void* reader(void* param)
+void* reader(void* newSockFdPtr)
 {
     printf("[%d] Request received to reader!\n", requestCounter);
 
     readercount++;
-    // Get newsockfd and deallocate it from the heap
-    int newsockfd = *(int*)newsockfdPtr;
-    free(newsockfdPtr);
+    // Get newSockFd and deallocate it from the heap
+    int newSockFd = *(int*)newSockFdPtr;
+    free(newSockFdPtr);
 
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
