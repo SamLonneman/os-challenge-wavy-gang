@@ -48,9 +48,9 @@ void* reader(void* param)
     printf("[%d] Request received to reader!\n", requestCounter);
 
     readercount++;
-
-
-    int newSockFd = *(int*)param;// retrieves the value of newSockFd from its address
+    // Get newsockfd and deallocate it from the heap
+    int newsockfd = *(int*)newsockfdPtr;
+    free(newsockfdPtr);
 
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
@@ -174,11 +174,15 @@ int main(int argc, char *argv[]) {
             exit(1); // exit when the newSockFd < 0 as no more requests
         }
 
+        // Temp storage of newsockfd on the heap
+        int *newSockFdPtr = malloc(sizeof(int));
+        memcpy(newSockFdPtr, &newSockFd, sizeof(int));
+
 
         // Print request received message and increment request counter
         printf("[%d] Request received.\n", requestCounter);
         requestCounter++;
-        pthread_create(&readerthreads[i++], NULL, reader, &newSockFd);
+        pthread_create(&readerthreads[i++], NULL, reader, newsockfdPtr);
     }
 
     return 0;
