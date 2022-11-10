@@ -46,7 +46,7 @@ pthread_t tid;
 void* reader(void* param){
 
     int newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
-    free(newsockfdPtr);
+    free(newsockFdPtr);
 
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
