@@ -98,25 +98,6 @@ void* reader(void* param)
     readercount--;
     close(newSockFd);
     pthread_exit(NULL);
-
-    ///////////
-
-
-
-
-
-    // Lock the semaphore
-    //sem_wait(&x);
-    //readercount--;
-
-    //if (readercount == 0) {
-    //    sem_post(&y);
-    //}
-
-    // Lock the semaphore
-    //sem_post(&x);
-
-    // kill the thread
 }
 
 
@@ -182,7 +163,7 @@ int main(int argc, char *argv[]) {
 
     // Begin accepting client connections as concurrent threads
     while (1) {
-
+        printf("Ready to accept next connection");
         // Accept connection ( will take the first in the queue)
         int newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 
