@@ -47,15 +47,13 @@ int requestCounter = 0;
 
 
 // function to read from client
+// param is the reference to the new socket fd --> &newSockFd
 void* reader(void* param)
 {
-    printf("test");
-    printf("hello");
-    //printf("[%d] Request received to reader!\n", requestCounter);
-
+    printf("[%d] Request received to reader!\n", requestCounter);
 
     // Lock the semaphore
-    //sem_wait(&x);       // this is where we are errorring
+    //sem_wait(&x);
     printf("line 103");
     //readercount++;
     printf("line 105");
@@ -69,24 +67,25 @@ void* reader(void* param)
     printf("line 113");
 
 
+    int newSockFd = *(param);// retrieves the value of newSockFd from its address
 
     //////// REVERSE HASH FUNCTION
+    // Read in request through new socket
+    uint8_t buffer[PACKET_REQUEST_SIZE];
+    read(newsockfd, buffer, PACKET_REQUEST_SIZE);
 
     // Declare request components
     uint8_t hash[32];
     uint64_t start;
     uint64_t end;
     uint8_t p;
-    int newsockfd;
 
     // Extract components from request
-    memcpy(hash, param + PACKET_REQUEST_HASH_OFFSET, 32);
-    memcpy(&start, param + PACKET_REQUEST_START_OFFSET, 8);
-    memcpy(&end, param + PACKET_REQUEST_END_OFFSET, 8);
-    memcpy(&p, param + PACKET_REQUEST_PRIO_OFFSET, 1);
-    memcpy(&newsockfd, param + PACKET_REQUEST_PRIO_OFFSET, sizeof(int));
-
-    free(param);
+    memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+    memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+    memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+    memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+    memcpy(&newsockfd, buffer + PACKET_REQUEST_PRIO_OFFSET, sizeof(int));
 
     // Convert byte order as needed
     start = htobe64(start);
@@ -115,7 +114,7 @@ void* reader(void* param)
 
     // Clean up and exit the thread
     close(newsockfd);
-    pthread_kill;
+    pthread_exit(NULL);
 
     ///////////
 
@@ -199,7 +198,6 @@ int main(int argc, char *argv[]) {
 
         // Accept connection ( will take the first in the queue)
         int newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-        //int newSocket;
 
         // check for error
         if (newSockFd < 0) {
@@ -213,14 +211,16 @@ int main(int argc, char *argv[]) {
         requestCounter++;
 
         int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
-        recv(newSockFd,&choice, sizeof(choice), 0); // ### this is where the problem is
+        recv(newSockFd,&choice, sizeof(choice), 0);
 
-        printf("%d size of choice.\n", sizeof(choice));
-        printf("%d choice.\n", choice);
 
         pthread_t readerthreads;
+        // &readerthreads is the reference to the thread id "readerthreads"
+        // the reader function acts as the new thread
+        // pointer to newSockFd (&newSockFd) is passed into the reader function
         pthread_create(&readerthreads, NULL, reader, &newSockFd);
     }
+    pthread_join(readerthreads, NULL)   // ends the main function
     return 0;
 }
 
