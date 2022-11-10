@@ -43,7 +43,7 @@ pthread_t tid;
 
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
-void* reader(void* param)
+void reader(void param)
 {
     printf("[%d] Request received to reader!\n", requestCounter);
 
@@ -60,13 +60,13 @@ void* reader(void* param)
     printf("\n%d reader is inside", readercount);
 
 
-    // ####### int newSockFd = *(param);// retrieves the value of newSockFd from its address
+    int newSockFd = param;// retrieves the value of newSockFd from its address
 
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
     uint8_t buffer[PACKET_REQUEST_SIZE];
-    // #######read(newSockFd, buffer, PACKET_REQUEST_SIZE);
-    recv(newSockFd,buffer, PACKET_REQUEST_SIZE, 0); /// redundant cause of read function
+    read(newSockFd, buffer, PACKET_REQUEST_SIZE);
+    //recv(newSockFd,buffer, PACKET_REQUEST_SIZE, 0); /// redundant cause of read function
 
     // Declare request components
     uint8_t hash[32];
@@ -228,7 +228,7 @@ int main(int argc, char *argv[]) {
         // &readerthreads is the reference to the thread id "readerthreads"
         // the reader function acts as the new thread
         // pointer to newSockFd (&newSockFd) is passed into the reader function
-        pthread_create(&readerthreads[i++], NULL, reader, &newSockFd);
+        pthread_create(&readerthreads[i++], NULL, reader, newSockFd);
     }
 
     return 0;
