@@ -101,7 +101,7 @@ void* reader(void* param)
     write(newSockFd, &key, 8);
 
     // Print response sent message
-    printf("[%d] Response Sent ---- %d\n", requestCounter, &key);
+    printf("[%d] Response Sent ---- %d\n", requestCounter);
 
 
     // Lock the semaphore
