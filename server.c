@@ -46,6 +46,7 @@ pthread_t tid;
 void* reader(void* param){
 
     int newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
+    free(newsockfdPtr);
 
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
@@ -102,9 +103,6 @@ void* reader(void* param){
 
 
 int main(int argc, char *argv[]) {
-    sem_init(&x, 0, 1);
-    sem_init(&y, 0, 1);
-
     int sockfd;               // holds the return of the socket function
     int newSockFd;
 
@@ -123,13 +121,11 @@ int main(int argc, char *argv[]) {
 
     printf("Inside Alana's Server \n");
 
-
     // Setting the port available in case it is not
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int)) < 0) {
         perror("setsockopt(SO_REUSEADDR) failed");
         exit(1);
     }
-
     // Bind to host address
     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR when accepting");
@@ -143,23 +139,15 @@ int main(int argc, char *argv[]) {
     // Declare client address and size
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr); // ### should NUM_CONNECTIONS = clilen?
-
-
-
     int NUM_CONNECTIONS;                // number of connections
     NUM_CONNECTIONS = 101;              // set to 50 for testing purposes
 
     listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
-
-
-    // initialise i to 0 (will act as a thread counter)
     int i = 0;
-    // Array for thread
     pthread_t tid[100];
 
     // Begin accepting client connections as concurrent threads
     while (1) {
-
         // Accept connection ( will take the first in the queue)
         int newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 
