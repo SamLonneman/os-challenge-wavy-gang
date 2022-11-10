@@ -66,7 +66,7 @@ void* reader(void* param)
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
     uint8_t buffer[PACKET_REQUEST_SIZE];
-    read(newsockfd, buffer, PACKET_REQUEST_SIZE);
+    read(newSockFd, buffer, PACKET_REQUEST_SIZE);
 
     // Declare request components
     uint8_t hash[32];
@@ -79,7 +79,7 @@ void* reader(void* param)
     memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
     memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
     memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
-    memcpy(&newsockfd, buffer + PACKET_REQUEST_PRIO_OFFSET, sizeof(int));
+    memcpy(&newSockFd, buffer + PACKET_REQUEST_PRIO_OFFSET, sizeof(int));
 
     // Convert byte order as needed
     start = htobe64(start);
@@ -101,7 +101,7 @@ void* reader(void* param)
 
     // Send resulting key back to client
     key = be64toh(key);
-    write(newsockfd, &key, 8);
+    write(newSockFd, &key, 8);
 
     // Print response sent message
     printf("[%d] Response Sent.\n", requestCounter);
@@ -120,7 +120,7 @@ void* reader(void* param)
 
     printf("\n%d Reader is leaving",
            readercount + 1);
-    close(newsockfd);
+    close(newSockFd);
     pthread_exit(NULL);
 
     ///////////
@@ -213,7 +213,7 @@ int main(int argc, char *argv[]) {
         // check for error
         if (newSockFd < 0) {
             perror("ERROR on accept");
-            exit(1); // exit when the newsockfd < 0 as no more requests
+            exit(1); // exit when the newSockFd < 0 as no more requests
         }
 
 
