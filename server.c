@@ -57,16 +57,16 @@ void* reader(void* param)
     // Unlock the semaphore
     sem_post(&x);
 
-    printf("\n%d reader is inside",
-           readercount);
+    printf("\n%d reader is inside", readercount);
 
 
-    int newSockFd = *(param);// retrieves the value of newSockFd from its address
+    // ####### int newSockFd = *(param);// retrieves the value of newSockFd from its address
 
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
     uint8_t buffer[PACKET_REQUEST_SIZE];
-    read(newSockFd, buffer, PACKET_REQUEST_SIZE);
+    // #######read(newSockFd, buffer, PACKET_REQUEST_SIZE);
+    recv(newSockFd,buffer, PACKET_REQUEST_SIZE, 0); /// redundant cause of read function
 
     // Declare request components
     uint8_t hash[32];
