@@ -2,22 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <netdb.h>
 #include <netinet/in.h>
-
 #include <openssl/sha.h>
-
 #include <signal.h>
 #include <unistd.h>
-
 #include "messages.h"
-
 #include <arpa/inet.h>
-
 #include <pthread.h>
 #include <sys/socket.h>
-
 #include <semaphore.h>  // included from https://www.geeksforgeeks.org/handling-multiple-clients-on-server-with-multithreading-using-socket-programming-in-c-cpp/
 
 // Experiment: Implementing threads with the use of Semaphores to facilitate a stable multiprocessing environment
@@ -38,6 +31,8 @@
 sem_t x, y;
 int readercount = 0;
 int requestCounter = 0;
+pthread_t readerthreads[1000];
+pthread_t tid;
 
 
 
@@ -53,18 +48,17 @@ void* reader(void* param)
     printf("[%d] Request received to reader!\n", requestCounter);
 
     // Lock the semaphore
-    //sem_wait(&x);
-    printf("line 103");
-    //readercount++;
-    printf("line 105");
+    sem_wait(&x);
+    readercount++;
 
-    //if (readercount == 1)
-    //    sem_wait(&y);
-    printf("line 109");
+    if (readercount == 1)
+        sem_wait(&y);
 
     // Unlock the semaphore
-    //sem_post(&x);
-    printf("line 113");
+    sem_post(&x);
+
+    printf("\n%d reader is inside",
+           readercount);
 
 
     int newSockFd = *(param);// retrieves the value of newSockFd from its address
@@ -112,7 +106,20 @@ void* reader(void* param)
     // Print response sent message
     printf("[%d] Response Sent.\n", requestCounter);
 
-    // Clean up and exit the thread
+
+    // Lock the semaphore
+    sem_wait(&x);
+    readercount--;
+
+    if (readercount == 0) {
+        sem_post(&y);
+    }
+
+    // Lock the semaphore
+    sem_post(&x);
+
+    printf("\n%d Reader is leaving",
+           readercount + 1);
     close(newsockfd);
     pthread_exit(NULL);
 
@@ -142,6 +149,8 @@ void* reader(void* param)
 
 
 int main(int argc, char *argv[]) {
+    sem_init(&x, 0, 1);
+    sem_init(&y, 0, 1);
 
     int sockfd;               // holds the return of the socket function
     int newSockFd;
@@ -192,6 +201,8 @@ int main(int argc, char *argv[]) {
 
     // initialise i to 0 (will act as a thread counter)
     int i = 0;
+    // Array for thread
+    pthread_t tid[100];
 
     // Begin accepting client connections as concurrent threads
     while (1) {
@@ -210,17 +221,16 @@ int main(int argc, char *argv[]) {
         printf("[%d] Request received.\n", requestCounter);
         requestCounter++;
 
-        int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
-        recv(newSockFd,&choice, sizeof(choice), 0);
+        //int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
+        //recv(newSockFd,&choice, sizeof(choice), 0); /// redundant cause of read function
 
 
-        pthread_t readerthreads;
         // &readerthreads is the reference to the thread id "readerthreads"
         // the reader function acts as the new thread
         // pointer to newSockFd (&newSockFd) is passed into the reader function
-        pthread_create(&readerthreads, NULL, reader, &newSockFd);
+        pthread_create(&readerthreads[i++], NULL, reader, &newSockFd);
     }
-    pthread_join(readerthreads, NULL)   // ends the main function
+
     return 0;
 }
 
