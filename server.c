@@ -103,29 +103,24 @@ void* reader(void* param){
 
 
 int main(int argc, char *argv[]) {
-    int sockfd;               // holds the return of the socket function
-    int newSockFd;
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket           // holds the return of the socket function
 
-    socklen_t addr_size;
 
+    // Set the port as available in case it is not available, and check for error
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
+        perror("setsockopt(SO_REUSEADDR) failed");
+        exit(1);
+    }
 
     // Initialize socket structure
     struct sockaddr_in serv_addr;
     bzero((char *) &serv_addr, sizeof(serv_addr));
-
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket
-
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(atoi(argv[1]));
 
     printf("Inside Alana's Server \n");
 
-    // Setting the port available in case it is not
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int)) < 0) {
-        perror("setsockopt(SO_REUSEADDR) failed");
-        exit(1);
-    }
     // Bind to host address
     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         perror("ERROR when accepting");
@@ -133,12 +128,10 @@ int main(int argc, char *argv[]) {
     }
 
 
-
-
-
-    // Declare client address and size
+    // Prepare client address and size
     struct sockaddr_in cli_addr;
-    int clilen = sizeof(cli_addr); // ### should NUM_CONNECTIONS = clilen?
+    int clilen = sizeof(cli_addr);
+
     int NUM_CONNECTIONS;                // number of connections
     NUM_CONNECTIONS = 101;              // set to 50 for testing purposes
 
