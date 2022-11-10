@@ -151,15 +151,11 @@ int main(int argc, char *argv[]) {
 
 
     int NUM_CONNECTIONS;                // number of connections
-    NUM_CONNECTIONS = 55;              // set to 50 for testing purposes
+    NUM_CONNECTIONS = 110;              // set to 50 for testing purposes
 
     listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
-
-
-    // initialise i to 0 (will act as a thread counter)
     int i = 0;
-    // Array for thread
-    pthread_t tid[100];
+    pthread_t tid[101];         // Array for thread
 
     // Begin accepting client connections as concurrent threads
     while (1) {
@@ -182,7 +178,7 @@ int main(int argc, char *argv[]) {
         // Print request received message and increment request counter
         printf("[%d] Request received.\n", requestCounter);
         requestCounter++;
-        pthread_create(&readerthreads[i++], NULL, reader, newSockFdPtr);
+        pthread_create(&readerthreads[i], NULL, reader, newSockFdPtr);
     }
 
     return 0;
