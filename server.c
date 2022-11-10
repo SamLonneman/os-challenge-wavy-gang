@@ -47,15 +47,8 @@ void* reader(void* param)
 {
     printf("[%d] Request received to reader!\n", requestCounter);
 
-    // Lock the semaphore
-    sem_wait(&x);
     readercount++;
 
-    if (readercount == 1)
-        sem_wait(&y);
-
-    // Unlock the semaphore
-    sem_post(&x);
 
     int newSockFd = *(int*)param;// retrieves the value of newSockFd from its address
 
@@ -102,21 +95,7 @@ void* reader(void* param)
 
     // Print response sent message
     printf("[%d] Response Sent ----\n", requestCounter);
-
-
-    // Lock the semaphore
-    sem_wait(&x);
     readercount--;
-
-    if (readercount == 0) {
-        sem_post(&y);
-    }
-
-    // Lock the semaphore
-    sem_post(&x);
-
-    printf("\n%d Reader is leaving",
-           readercount + 1);
     close(newSockFd);
     pthread_exit(NULL);
 
