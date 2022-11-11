@@ -138,6 +138,9 @@ int main(int argc, char *argv[]) {
                 // Search for key in given range corresponding to given hash
                 uint8_t calculatedHash[32];
                 uint64_t key;
+
+                printf("key: %ld\n", start);
+                printf("key: %ld\n", end);
                 for (key = start; key < end; key++) {
                     SHA256((uint8_t * ) & key, 8, calculatedHash);
                     if (memcmp(hash, calculatedHash, 32) == 0)
@@ -146,7 +149,7 @@ int main(int argc, char *argv[]) {
 
                 // Send resulting key back to client
                 key = be64toh(key);
-                printf("key: %ld", key);
+                printf("key: %ld\n", key);
                 write(newSockFd, &key, 8);
                 close(newSockFd);
 
