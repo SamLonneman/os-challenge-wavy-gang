@@ -128,13 +128,12 @@ int main(int argc, char *argv[]) {
             int j;
             j = priorityArray[i][0];
             while (j > 1) {
-                printf("in the loop");
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
                 // Convert byte order as needed
                 uint64_t start = htobe64(startArray[i][j]);
                 uint64_t end = htobe64(endArray[i][j]);
                 uint8_t *hash = hashArray[i][j];
-                int newSockFd = priorityArray[i][j];
+                newSockFd = priorityArray[i][j];
 
                 // Search for key in given range corresponding to given hash
                 uint8_t calculatedHash[32];
@@ -147,6 +146,7 @@ int main(int argc, char *argv[]) {
 
                 // Send resulting key back to client
                 key = be64toh(key);
+                printf("key: %d", key);
                 write(newSockFd, &key, 8);
                 close(newSockFd);
 
