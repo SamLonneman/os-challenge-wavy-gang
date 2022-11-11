@@ -16,7 +16,7 @@ int newSockFd;
 int priorityArray[16][300] = {0};
 uint64_t startArray[16][300];
 uint64_t endArray[16][300];
-uint8_t hashArray[16][300];
+uint8_t * hashArray[16][300];
 
 
 
