@@ -101,7 +101,6 @@ int main(int argc, char *argv[]) {
         // Accept connection ( will take the first in the queue)
         newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         requestCounter++;
-        printf("request num: %d\n", requestCounter);
 
         // check for error
         if (newSockFd < 0) {
