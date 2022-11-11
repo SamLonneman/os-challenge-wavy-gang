@@ -153,14 +153,11 @@ int main(int argc, char *argv[]) {
                 key = be64toh(key);
                 write(newSockFd, &key, 8);
                 close(newSockFd);
-
                 j = j - 1;
             }
             i = i - 1;
         }
-        exit(1);
     }
-    return 0;
 }
 
 
