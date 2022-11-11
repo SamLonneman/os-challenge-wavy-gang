@@ -109,6 +109,10 @@ int main(int argc, char *argv[]) {
 
         int arraySpot = priorityArray[p][0];            // find spot in array for this request
         priorityArray[p-1][0] = priorityArray[p - 1][0] + 1; // increment count
+
+        printf("start: %ld\n", start);
+        printf("end: %ld\n", end);
+
         hashArray[p-1][arraySpot] = hash;
         startArray[p-1][arraySpot] = start;
         endArray[p-1][arraySpot] = end;
@@ -139,8 +143,8 @@ int main(int argc, char *argv[]) {
                 uint8_t calculatedHash[32];
                 uint64_t key;
 
-                printf("key: %ld\n", start);
-                printf("key: %ld\n", end);
+                printf("start: %ld\n", start);
+                printf("end: %ld\n", end);
                 for (key = start; key < end; key++) {
                     SHA256((uint8_t * ) & key, 8, calculatedHash);
                     if (memcmp(hash, calculatedHash, 32) == 0)
