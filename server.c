@@ -39,6 +39,24 @@ void terminationHandler(int sig) {
 
 int main(int argc, char *argv[]) {
 // first element in each row is a count of the nest place to be filled in the array
+    int priorityArray[0][0] = 1;
+    int priorityArray[1][0] = 1;
+    int priorityArray[2][0] = 1;
+    int priorityArray[3][0] = 1;
+    int priorityArray[4][0] = 1;
+    int priorityArray[5][0] = 1;
+    int priorityArray[6][0] = 1;
+    int priorityArray[7][0] = 1;
+    int priorityArray[8][0] = 1;
+    int priorityArray[9][0] = 1;
+    int priorityArray[10][0] = 1;
+    int priorityArray[11][0] = 1;
+    int priorityArray[12][0] = 1;
+    int priorityArray[13][0] = 1;
+    int priorityArray[14][0] = 1;
+    int priorityArray[15][0] = 1;
+
+
 
 
     // Set up signal for graceful termination
