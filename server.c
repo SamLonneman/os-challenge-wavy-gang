@@ -1,17 +1,13 @@
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <openssl/sha.h>
+#include <pthread.h>
 #include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include "messages.h"
-#include <arpa/inet.h>
-#include <pthread.h>
-#include <sys/socket.h>
-#include <semaphore.h>  // included from https://www.geeksforgeeks.org/handling-multiple-clients-on-server-with-multithreading-using-socket-programming-in-c-cpp/
 
 // Experiment: Implementing threads with the use of Semaphores to facilitate a stable multiprocessing environment
 // semaphore count indicates the number of free resources
@@ -55,7 +51,6 @@ void* reader(void *param){
     memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
     memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
     memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
-    memcpy(&newSockFd, buffer + PACKET_REQUEST_PRIO_OFFSET, sizeof(int));
 
     // Convert byte order as needed
     start = htobe64(start);
@@ -108,7 +103,7 @@ int main(int argc, char *argv[]) {
     }
 
     int NUM_CONNECTIONS;                // number of connections
-    NUM_CONNECTIONS = 205;              // set to 50 for testing purposes
+    NUM_CONNECTIONS = 100;              // set to 50 for testing purposes
 
     listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
 
