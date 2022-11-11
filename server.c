@@ -52,6 +52,9 @@ void* worker_thread(void *pq) {
 // Start server
 int main(int argc, char *argv[]) {
 
+    // Initialize Mutex
+    pthread_mutex_init(&lock, NULL);
+
     // Create socket
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
