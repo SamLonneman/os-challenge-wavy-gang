@@ -56,6 +56,8 @@ int main(int argc, char *argv[]) {
     priorityArray[14][0] = 1;
     priorityArray[15][0] = 1;
 
+    requestCounter = 0;
+
 
 
 
