@@ -123,6 +123,7 @@ int main(int argc, char *argv[]) {
 
     priorityLoop:
     {
+        printf("Hello World")
         int i;
         i = 15;
         while (i > -1) {
