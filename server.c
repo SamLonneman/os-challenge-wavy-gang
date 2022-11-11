@@ -126,12 +126,15 @@ int main(int argc, char *argv[]) {
 
     priorityLoop:
     {
+        int p;
+        p = 0;
         int i;
         i = 15;
         while (i > -1) {
             int j;
             j = priorityArray[i][0];
             while (j > 1) {
+                p++;
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
                 // Convert byte order as needed
                 uint64_t start = htobe64(startArray[i][j]);
@@ -154,14 +157,17 @@ int main(int argc, char *argv[]) {
                 // Send resulting key back to client
                 key = be64toh(key);
                 printf("key: %ld\n", key);
-                write(newSockFd, &key, 8);
+                //write(newSockFd, &key, 8);
+                write(newSockFd, &requestCounter, sizeof(requestCounter));
                 close(newSockFd);
 
                 j = j - 1;
             }
             i = i - 1;
         }
+        exit(1);
     }
+    return 0;
 }
 
 
