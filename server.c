@@ -93,8 +93,8 @@ int main(int argc, char *argv[]) {
     int clilen = sizeof(cli_addr);
 
     // Fork into 4 processes, one for each core
-    //###fork();
-    //#####fork();
+    fork();
+    fork();
 
     // Accept client connections until there are none left
     while (1) {
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
         // TODO: Change this to 250 for submission
 
-        if (requestCounter == 12) {
+        if (requestCounter == 3) {
             //goto priorityLoop;
             int p;
 
