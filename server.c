@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 
                 // Send resulting key back to client
                 key = be64toh(key);
-                printf("key: %d", key);
+                printf("key: %ld", key);
                 write(newSockFd, &key, 8);
                 close(newSockFd);
 
