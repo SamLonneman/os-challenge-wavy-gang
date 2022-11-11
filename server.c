@@ -83,7 +83,6 @@ int main(int argc, char *argv[]) {
         // Accept connection ( will take the first in the queue)
         newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         requestCounter++;
-        printf("Request num: %d and sockFd: %d \n",requestCounter, newSockFd);
 
         // check for error
         if (newSockFd < 0) {
@@ -109,11 +108,11 @@ int main(int argc, char *argv[]) {
         memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
         int arraySpot = priorityArray[p][0];            // find spot in array for this request
-        priorityArray[p][0] = priorityArray[p - 1][0] + 1; // increment count
-        hashArray[p][arraySpot] = hash;
-        startArray[p][arraySpot] = start;
-        endArray[p][arraySpot] = end;
-        priorityArray[p][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
+        priorityArray[p-1][0] = priorityArray[p - 1][0] + 1; // increment count
+        hashArray[p-1][arraySpot] = hash;
+        startArray[p-1][arraySpot] = start;
+        endArray[p-1][arraySpot] = end;
+        priorityArray[p-1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
 
         // TODO: Change this to 250 for submission
         if(requestCounter == 25){
@@ -123,13 +122,13 @@ int main(int argc, char *argv[]) {
 
     priorityLoop:
     {
-        printf("Hello World");
         int i;
         i = 15;
         while (i > -1) {
             int j;
             j = priorityArray[i][0];
             while (j > 1) {
+                printf("in the loop")
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
                 // Convert byte order as needed
                 uint64_t start = htobe64(startArray[i][j]);
