@@ -137,6 +137,7 @@ int main(int argc, char *argv[]) {
         if (requestCounter == 12) {
             //goto priorityLoop;
             int p;
+
             p = 0;
             int i;
             i = 15;
@@ -145,6 +146,7 @@ int main(int argc, char *argv[]) {
                 j = priorityArray[i][0];
                 while (j > 1) {
                     p++;
+                    printf("%d\n",p)
                     // work on request in place priorityArray[i][priorityArray[i][0]-1]
                     // Convert byte order as needed
                     uint64_t start = htobe64(startArray[i][j]);
