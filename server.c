@@ -13,7 +13,7 @@ int sockfd;
 int newSockFd;
 
 // each priority level has a row which stores the requests to be run
-int priorityArray[16][300];
+int priorityArray[16][300] = {0};
 uint64_t startArray[16][300];
 uint64_t endArray[16][300];
 uint8_t hashArray[16][300];
@@ -39,22 +39,6 @@ void terminationHandler(int sig) {
 int main(int argc, char *argv[]) {
 // first element in each row is a count of the nest place to be filled in the array
 
-    priorityArray[0][0] = 0;
-    priorityArray[1][0] = 0;
-    priorityArray[2][0] = 0;
-    priorityArray[3][0] = 0;
-    priorityArray[4][0] = 0;
-    priorityArray[5][0] = 0;
-    priorityArray[6][0] = 0;
-    priorityArray[7][0] = 0;
-    priorityArray[8][0] = 0;
-    priorityArray[9][0] = 0;
-    priorityArray[10][0] = 0;
-    priorityArray[11][0] = 0;
-    priorityArray[12][0] = 0;
-    priorityArray[13][0] = 0;
-    priorityArray[14][0] = 0;
-    priorityArray[15][0] = 0;
 
     // Set up signal for graceful termination
     signal(SIGINT, terminationHandler);
