@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
             while (i > -1) {
                 int j;
                 j = priorityArray[i][0];
-                while (j > 1) {
+                while (j > 0) {
                     p++;
                     printf("%d\n",p);
                     // work on request in place priorityArray[i][priorityArray[i][0]-1]
