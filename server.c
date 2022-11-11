@@ -126,7 +126,6 @@ int main(int argc, char *argv[]) {
 
     // Begin accepting client connections as concurrent threads
     while (1) {
-        i++;
         // Accept connection ( will take the first in the queue)
         int newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 
@@ -137,8 +136,8 @@ int main(int argc, char *argv[]) {
         }
 
         // Print request received message and increment request counter
-        printf("[%d] Request received.\n", requestCounter);
         requestCounter++;
+        printf("[%d] Request received.\n", requestCounter);
 
         //int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
         //recv(newSockFd,&choice, sizeof(choice), 0); /// redundant cause of read function
@@ -149,7 +148,10 @@ int main(int argc, char *argv[]) {
         // &readerthreads is the reference to the thread id "readerthreads"
         // the reader function acts as the new thread
         // pointer to newSockFd (&newSockFd) is passed into the reader function
-        pthread_create(&readerthreads[i], NULL, reader, newSockFdPtr);
+
+
+        // ####pthread_create(&readerthreads[requestCounter], NULL, reader, newSockFdPtr);
+        pthread_create(&tid, NULL, reader, newSockFdPtr);
     }
 }
 
