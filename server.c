@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
         //recv(newSockFd,&choice, sizeof(choice), 0); /// redundant cause of read function
 
         int *newSockFdPtr = malloc(sizeof(int));
-        memcpy(newSockFdPtr, &newsockfd, sizeof(int));
+        memcpy(newSockFdPtr, &newSockFd, sizeof(int));
 
 
         // &readerthreads is the reference to the thread id "readerthreads"
