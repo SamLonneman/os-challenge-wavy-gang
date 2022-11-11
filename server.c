@@ -144,15 +144,15 @@ int main(int argc, char *argv[]) {
             while (i > -1) {
                 int j;
                 j = priorityArray[i][0];
-                while (j > 0 && p < 25) {
+                while (j > 1) {
 
 
                     // work on request in place priorityArray[i][priorityArray[i][0]-1]
                     // Convert byte order as needed
-                    uint64_t start = htobe64(startArray[i][j]);
-                    uint64_t end = htobe64(endArray[i][j]);
-                    uint8_t *hash = hashArray[i][j];
-                    newSockFd = priorityArray[i][j];
+                    uint64_t start = htobe64(startArray[i][j-1]);
+                    uint64_t end = htobe64(endArray[i][j-1]);
+                    uint8_t *hash = hashArray[i][j-1];
+                    newSockFd = priorityArray[i][j-1];
 
                     uint8_t calculatedHash[32];
                     uint64_t key;
