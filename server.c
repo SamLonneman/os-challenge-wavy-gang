@@ -12,6 +12,14 @@
 int sockfd;
 int newSockFd;
 
+// each priority level has a row which stores the requests to be run
+int priorityArray[16][300];
+
+// first element in each row is a count of the nest place to be filled in the array
+for(i=0;i<16;i++) {
+    priorityArray[i][0] = 0
+}
+
 void terminationHandler(int sig) {
     close(sockfd);
     close(newSockFd);
@@ -20,28 +28,9 @@ void terminationHandler(int sig) {
 
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
-void* reader(void *param){
 
-    newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
-    free(param);
 
-    //////// REVERSE HASH FUNCTION
-    // Read in request through new socket
-    uint8_t buffer[PACKET_REQUEST_SIZE];
-    read(newSockFd, buffer, PACKET_REQUEST_SIZE);
-
-    // Declare request components
-    uint8_t hash[32];
-    uint64_t start;
-    uint64_t end;
-    uint8_t p;
-
-    // Extract components from request
-    memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-    memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-    memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
-    memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
-
+void* reverseHash(uint8_t hash, uint64_t start, uint64_t end){
     // Convert byte order as needed
     start = htobe64(start);
     end = htobe64(end);
@@ -58,10 +47,9 @@ void* reader(void *param){
     // Send resulting key back to client
     key = be64toh(key);
     write(newSockFd, &key, 8);
-
     close(newSockFd);
-    pthread_exit(NULL);
 }
+
 
 
 int main(int argc, char *argv[]) {
@@ -102,7 +90,7 @@ int main(int argc, char *argv[]) {
     fork();
     fork();
 
-    // Begin accepting client connections as concurrent threads
+    // Accept client connections until there are none left
     while (1) {
         // Accept connection ( will take the first in the queue)
         newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
@@ -110,13 +98,45 @@ int main(int argc, char *argv[]) {
         // check for error
         if (newSockFd < 0) {
             perror("ERROR on accept");
-            exit(1); // exit when the newSockFd < 0 as no more requests
+            // ###exit(1); // exit when the newSockFd < 0 as no more requests
+            goto priorityLoop;
         }
-        int *newSockFdPtr = malloc(sizeof(int));
-        memcpy(newSockFdPtr, &newSockFd, sizeof(int));
-        pthread_t tid;
-        pthread_create(&tid, NULL, reader, newSockFdPtr);
+
+        // Read in request through new socket
+        uint8_t buffer[PACKET_REQUEST_SIZE];
+        read(newSockFd, buffer, PACKET_REQUEST_SIZE);
+
+        // Declare request components
+        uint8_t hash[32];
+        uint64_t start;
+        uint64_t end;
+        uint8_t p;
+
+        // Extract components from request
+        memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+        memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+        memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+        memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+
+        int arraySpot = priorityArray[p][0];            // find spot in array for this request
+        priorityArray[p][0] = priorityArray[p - 1][0] + 1; // increment count
+
+        (unit8_t, unit64_t, unit64_t) info = (hash, start, end);
+        priorityArray[p][arraySpot] = info;                   // add request to priority array
     }
+
+    priorityLoop:
+        for(i=15;i>-1;i--) {
+            while(priorityArray[i][0] > 1){
+                // work on request in place priorityArray[i][priorityArray[i][0]-1]
+                // Create thread to calculate and return response to client
+                pthread_t tid;
+                pthread_create(&tid, NULL, reverseHash, priorityArray[i][priorityArray[i][0]-1]);
+            }
+        }
+
+
+
 }
 
 
