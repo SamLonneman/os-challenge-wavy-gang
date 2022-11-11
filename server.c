@@ -36,27 +36,7 @@ void terminationHandler(int sig) {
 // param is the reference to the new socket fd --> &newSockFd
 
 
-void* reverseHash((int priority, int spot)){
-    // Convert byte order as needed
-    uint64_t start = htobe64(startArray[priority][spot]);
-    uint64_t end = htobe64(endArray[priority][spot]);
-    uint8_t hash = hashArray[priority][spot];
-    int newSockFd = priorityArray[priority][spot]
 
-    // Search for key in given range corresponding to given hash
-    uint8_t calculatedHash[32];
-    uint64_t key;
-    for (key = start; key < end; key++) {
-        SHA256((uint8_t *)&key, 8, calculatedHash);
-        if (memcmp(hash, calculatedHash, 32) == 0)
-            break;
-    }
-
-    // Send resulting key back to client
-    key = be64toh(key);
-    write(newSockFd, &key, 8);
-    close(newSockFd);
-}
 
 
 
@@ -140,9 +120,26 @@ int main(int argc, char *argv[]) {
             int j = priorityArray[i][0];
             while(j > 1){
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
-                // Create thread to calculate and return response to client
-                pthread_t tid;
-                pthread_create(&tid, NULL, reverseHash, (i, j));
+                // Convert byte order as needed
+                uint64_t start = htobe64(startArray[priority][spot]);
+                uint64_t end = htobe64(endArray[priority][spot]);
+                uint8_t hash = hashArray[priority][spot];
+                int newSockFd = priorityArray[priority][spot]
+
+                // Search for key in given range corresponding to given hash
+                uint8_t calculatedHash[32];
+                uint64_t key;
+                for (key = start; key < end; key++) {
+                    SHA256((uint8_t *)&key, 8, calculatedHash);
+                    if (memcmp(hash, calculatedHash, 32) == 0)
+                        break;
+                }
+
+                // Send resulting key back to client
+                key = be64toh(key);
+                write(newSockFd, &key, 8);
+                close(newSockFd);
+
                 j = j-1;
             }
             int_i = int_i-1;
