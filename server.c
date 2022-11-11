@@ -154,9 +154,10 @@ int main(int argc, char *argv[]) {
                     uint64_t end = htobe64(endArray[i][j]);
                     uint8_t *hash = hashArray[i][j];
                     newSockFd = priorityArray[i][j];
-                    //if(p == 25){
+                    if(p == 25){
                       //  close(newSockFd);
-                    //}
+                      printf("hi");
+                    }
                     else {
 
                         // Search for key in given range corresponding to given hash
