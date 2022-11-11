@@ -43,7 +43,7 @@ pthread_t tid;
 
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
-void* reader(void* param){
+void* reader(void *param){
 
     int newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
     free(param);
@@ -164,8 +164,6 @@ int main(int argc, char *argv[]) {
         // pointer to newSockFd (&newSockFd) is passed into the reader function
         pthread_create(&readerthreads[i++], NULL, reader, &newSockFd);
     }
-
-    return 0;
 }
 
 
