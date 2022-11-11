@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket --> holds the return of the socket function
 
     // Set the port as available in case it is not available, and check for error
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int)) < 0) {
         perror("setsockopt(SO_REUSEADDR) failed");
         exit(1);
     }
@@ -107,61 +107,51 @@ int main(int argc, char *argv[]) {
         memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
         memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
-        int arraySpot = priorityArray[p-1][0];            // find spot in array for this request
-        priorityArray[p-1][0] = priorityArray[p - 1][0] + 1; // increment count
+        int arraySpot = priorityArray[p - 1][0];            // find spot in array for this request
+        priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1; // increment count
 
-        hashArray[p-1][arraySpot] = hash;
-        startArray[p-1][arraySpot] = start;
-        endArray[p-1][arraySpot] = end;
-        priorityArray[p-1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
+        hashArray[p - 1][arraySpot] = hash;
+        startArray[p - 1][arraySpot] = start;
+        endArray[p - 1][arraySpot] = end;
+        priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
         // TODO: Change this to 250 for submission
-        if(requestCounter == 3){
-            goto priorityLoop;
-        }
-    }
+        if (requestCounter == 3) {
+            //goto priorityLoop;
+            int p;
+            p = 0;
+            int i;
+            i = 15;
+            while (i > -1) {
+                int j;
+                j = priorityArray[i][0];
+                while (j > 1) {
+                    p++;
+                    printf("%d\n", p);
+                    // work on request in place priorityArray[i][priorityArray[i][0]-1]
+                    // Convert byte order as needed
+                    uint64_t start = htobe64(startArray[i][j]);
+                    uint64_t end = htobe64(endArray[i][j]);
+                    uint8_t *hash = hashArray[i][j];
+                    newSockFd = priorityArray[i][j];
 
-    priorityLoop:
-    {
-        int p;
-        p = 0;
-        int i;
-        i = 15;
-        while (i > -1) {
-            int j;
-            j = priorityArray[i][0];
-            while (j > 1) {
-                p++;
-                printf("%d\n",p);
-                // work on request in place priorityArray[i][priorityArray[i][0]-1]
-                // Convert byte order as needed
-                uint64_t start = htobe64(startArray[i][j]);
-                uint64_t end = htobe64(endArray[i][j]);
-                uint8_t *hash = hashArray[i][j];
-                newSockFd = priorityArray[i][j];
+                    // Search for key in given range corresponding to given hash
+                    uint8_t calculatedHash[32];
+                    uint64_t key;
 
-                // Search for key in given range corresponding to given hash
-                uint8_t calculatedHash[32];
-                uint64_t key;
+                    for (key = start; key < end; key++) {
+                        SHA256((uint8_t * ) & key, 8, calculatedHash);
+                        if (memcmp(hash, calculatedHash, 32) == 0)
+                            break;
+                    }
 
-                for (key = start; key < end; key++) {
-                    SHA256((uint8_t * ) & key, 8, calculatedHash);
-                    if (memcmp(hash, calculatedHash, 32) == 0)
-                        break;
+                    // Send resulting key back to client
+                    key = be64toh(key);
+                    write(newSockFd, &key, 8);
+                    close(newSockFd);
+                    j = j - 1;
                 }
-
-                // Send resulting key back to client
-                key = be64toh(key);
-                write(newSockFd, &key, 8);
-                close(newSockFd);
-                j = j - 1;
+                i = i - 1;
             }
-            i = i - 1;
         }
     }
 }
-
-
-
-
-
-
