@@ -158,11 +158,14 @@ int main(int argc, char *argv[]) {
         //int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
         //recv(newSockFd,&choice, sizeof(choice), 0); /// redundant cause of read function
 
+        int *newSockFdPtr = malloc(sizeof(int));
+        memcpy(newSockFdPtr, &newsockfd, sizeof(int));
+
 
         // &readerthreads is the reference to the thread id "readerthreads"
         // the reader function acts as the new thread
         // pointer to newSockFd (&newSockFd) is passed into the reader function
-        pthread_create(&readerthreads[i++], NULL, reader, &newSockFd);
+        pthread_create(&readerthreads[i++], NULL, reader, newSockFdPtr);
     }
 }
 
