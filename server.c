@@ -11,6 +11,7 @@
 
 int sockfd;
 int newSockFd;
+int requestCounter;
 
 // each priority level has a row which stores the requests to be run
 int priorityArray[16][300] = {0};
@@ -81,6 +82,8 @@ int main(int argc, char *argv[]) {
     while (1) {
         // Accept connection ( will take the first in the queue)
         newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        requestCounter++;
+        printd(%d,requestCounter);
 
         // check for error
         if (newSockFd < 0) {
