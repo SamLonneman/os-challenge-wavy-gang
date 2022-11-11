@@ -17,14 +17,28 @@ int priorityArray[16][300];
 uint64_t startArray[16][300];
 uint64_t endArray[16][300];
 uint8_t hashArray[16][300];
-(int, int) priority_spot;
 
 // first element in each row is a count of the nest place to be filled in the array
-int int1 = 0;
-while(int1<16) {
-    priorityArray[i][0] = 0;
-    int1++;
-}
+
+priorityArray[0][0] = 0;
+priorityArray[1][0] = 0;
+priorityArray[2][0] = 0;
+priorityArray[3][0] = 0;
+priorityArray[4][0] = 0;
+priorityArray[5][0] = 0;
+priorityArray[6][0] = 0;
+priorityArray[7][0] = 0;
+priorityArray[8][0] = 0;
+priorityArray[9][0] = 0;
+priorityArray[10][0] = 0;
+priorityArray[11][0] = 0;
+priorityArray[12][0] = 0;
+priorityArray[13][0] = 0;
+priorityArray[14][0] = 0;
+priorityArray[15][0] = 0;
+
+
+
 
 void terminationHandler(int sig) {
     close(sockfd);
@@ -115,16 +129,18 @@ int main(int argc, char *argv[]) {
     }
 
     priorityLoop:
-        int int_i = 15;
+        int int_i;
+        int_i= 15;
         while(int_i>-1) {
-            int j = priorityArray[i][0];
+            int j;
+            j = priorityArray[int_i][0];
             while(j > 1){
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
                 // Convert byte order as needed
-                uint64_t start = htobe64(startArray[i][j]);
-                uint64_t end = htobe64(endArray[i][j]);
-                uint8_t hash = hashArray[i][j];
-                int newSockFd = priorityArray[i][j]
+                uint64_t start = htobe64(startArray[int_i][j]);
+                uint64_t end = htobe64(endArray[int_i][j]);
+                uint8_t hash = hashArray[int_i][j];
+                int newSockFd = priorityArray[int_i][j]
 
                 // Search for key in given range corresponding to given hash
                 uint8_t calculatedHash[32];
