@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
         // Accept connection ( will take the first in the queue)
         newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         requestCounter++;
-        printf("Request num: %d and sockFd: %d",requestCounter, newSockFd);
+        printf("Request num: %d and sockFd: %d \n",requestCounter, newSockFd);
 
         // check for error
         if (newSockFd < 0) {
