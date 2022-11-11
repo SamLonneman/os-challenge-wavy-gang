@@ -30,7 +30,7 @@ int newSockFd;
 
 void terminationHandler(int sig) {
     close(sockfd);
-    close(newsockfd);
+    close(newSockFd);
     exit(0);
 }
 
