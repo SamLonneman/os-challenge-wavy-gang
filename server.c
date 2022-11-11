@@ -114,6 +114,11 @@ int main(int argc, char *argv[]) {
         startArray[p][arraySpot] = start;
         endArray[p][arraySpot] = end;
         priorityArray[p][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
+
+        // TODO: Change this to 250 for submission
+        if(requestCounter == 25){
+            goto priorityLoop;
+        }
     }
 
     priorityLoop:
