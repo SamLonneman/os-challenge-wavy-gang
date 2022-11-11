@@ -142,7 +142,6 @@ int main(int argc, char *argv[]) {
             while (i > -1) {
                 int j;
                 j = priorityArray[i][0];
-                printf("num in this priority: %d\n", j);
                 while (j > 1) {
                     p++;
                     // work on request in place priorityArray[i][priorityArray[i][0]-1]
@@ -172,6 +171,5 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    close(sockfd);
     return 0;
 }
