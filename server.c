@@ -37,8 +37,7 @@ void* reader(void *param){
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
     uint8_t buffer[PACKET_REQUEST_SIZE];
-    //read(newSockFd, buffer, PACKET_REQUEST_SIZE);
-    recv(newSockFd,buffer, PACKET_REQUEST_SIZE, 0); /// redundant cause of read function
+    read(newSockFd, buffer, PACKET_REQUEST_SIZE);
 
     // Declare request components
     uint8_t hash[32];
