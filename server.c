@@ -9,18 +9,6 @@
 #include <unistd.h>
 #include "messages.h"
 
-// Experiment: Implementing threads with the use of Semaphores to facilitate a stable multiprocessing environment
-// semaphore count indicates the number of free resources
-// can potentially be adjusted to allow max priority access to free resources
-// threads open in all free resources
-
-// Hypothesis: Theoretically this should be faster than the milestone which was process based however experiment 1 makes us question this
-// unsure whether the use of semaphores specifically in the implementation of threads will increase or decrease speed
-
-// Multithreading: singular process with multiple threads of control
-// Threads share resources (same address space) and should therefore be more efficient than processes
-// Faster to switch and creat/terminate
-
 int sockfd;
 int newSockFd;
 
@@ -94,8 +82,6 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(atoi(argv[1]));
-
-    printf("Inside Alana's Server \n");
 
     // Bind to host address
     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
