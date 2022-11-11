@@ -25,13 +25,20 @@
 int readercount = 0;
 int requestCounter = 0;
 pthread_t readerthreads[1000];
+int sockfd;
+int newSockFd;
 
+void terminationHandler(int sig) {
+    close(sockfd);
+    close(newsockfd);
+    exit(0);
+}
 
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
 void* reader(void *param){
 
-    int newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
+    newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
     free(param);
 
     //////// REVERSE HASH FUNCTION
@@ -73,12 +80,11 @@ void* reader(void *param){
 }
 
 
-
-
-
-
 int main(int argc, char *argv[]) {
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket --> holds the return of the socket function
+    // Set up signal for graceful termination
+    signal(SIGINT, terminationHandler);
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket --> holds the return of the socket function
 
     // Set the port as available in case it is not available, and check for error
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0) {
@@ -110,10 +116,15 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr);
 
+    // Fork into 4 processes, one for each core
+    fork();
+    fork();
+
+
     // Begin accepting client connections as concurrent threads
     while (1) {
         // Accept connection ( will take the first in the queue)
-        int newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 
         // check for error
         if (newSockFd < 0) {
@@ -125,17 +136,9 @@ int main(int argc, char *argv[]) {
         requestCounter++;
         printf("[%d] Request received.\n", requestCounter);
 
-        //int choice = 0;         // choice = 1 for reader or 2 for writer but this client only sends things to be read
-        //recv(newSockFd,&choice, sizeof(choice), 0); /// redundant cause of read function
-
         int *newSockFdPtr = malloc(sizeof(int));
         memcpy(newSockFdPtr, &newSockFd, sizeof(int));
         pthread_t tid;
-
-        // &readerthreads is the reference to the thread id "readerthreads"
-        // the reader function acts as the new thread
-        // pointer to newSockFd (&newSockFd) is passed into the reader function
-
         pthread_create(&readerthreads[requestCounter], NULL, reader, newSockFdPtr);
     }
 }
