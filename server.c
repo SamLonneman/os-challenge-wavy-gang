@@ -37,8 +37,8 @@ void* reader(void *param){
     //////// REVERSE HASH FUNCTION
     // Read in request through new socket
     uint8_t buffer[PACKET_REQUEST_SIZE];
-    read(newSockFd, buffer, PACKET_REQUEST_SIZE);
-    //recv(newSockFd,buffer, PACKET_REQUEST_SIZE, 0); /// redundant cause of read function
+    //read(newSockFd, buffer, PACKET_REQUEST_SIZE);
+    recv(newSockFd,buffer, PACKET_REQUEST_SIZE, 0); /// redundant cause of read function
 
     // Declare request components
     uint8_t hash[32];
@@ -137,8 +137,6 @@ int main(int argc, char *argv[]) {
         // the reader function acts as the new thread
         // pointer to newSockFd (&newSockFd) is passed into the reader function
 
-
-        // ####pthread_create(&readerthreads[requestCounter], NULL, reader, newSockFdPtr);
         pthread_create(&readerthreads[requestCounter], NULL, reader, newSockFdPtr);
     }
 }
