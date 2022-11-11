@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
                     uint8_t *hash = hashArray[i][j];
                     newSockFd = priorityArray[i][j];
                     if(p == 25){
-                        close(newSockFd)
+                        close(newSockFd);
                     }
                     else {
 
