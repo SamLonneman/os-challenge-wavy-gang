@@ -16,8 +16,10 @@ int newSockFd;
 int priorityArray[16][300];
 
 // first element in each row is a count of the nest place to be filled in the array
-for(i=0;i<16;i++) {
-    priorityArray[i][0] = 0
+int = 0;
+while(int<16) {
+    priorityArray[i][0] = 0;
+    int++;
 }
 
 void terminationHandler(int sig) {
@@ -121,22 +123,23 @@ int main(int argc, char *argv[]) {
         int arraySpot = priorityArray[p][0];            // find spot in array for this request
         priorityArray[p][0] = priorityArray[p - 1][0] + 1; // increment count
 
-        (unit8_t, unit64_t, unit64_t) info = (hash, start, end);
+        (uint8_t, uint64_t, uint64_t) info = (hash, start, end);
         priorityArray[p][arraySpot] = info;                   // add request to priority array
     }
 
     priorityLoop:
-        for(i=15;i>-1;i--) {
-            while(priorityArray[i][0] > 1){
+        int_i = 15;
+        while(int_i>-1) {
+            j = priorityArray[i][0];
+            while(j > 1){
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
                 // Create thread to calculate and return response to client
                 pthread_t tid;
-                pthread_create(&tid, NULL, reverseHash, priorityArray[i][priorityArray[i][0]-1]);
+                pthread_create(&tid, NULL, reverseHash, priorityArray[i][j-1]);
+                j = j-1;
             }
+            int_i = int_i-1;
         }
-
-
-
 }
 
 
