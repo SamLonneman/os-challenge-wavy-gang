@@ -15,9 +15,9 @@ int requestCounter;
 
 // each priority level has a row which stores the requests to be run
 int priorityArray[16][300] = {0};
-uint64_t startArray[16][300];
-uint64_t endArray[16][300];
-uint8_t * hashArray[16][300];
+uint64_t startArray[16][300] = {0};
+uint64_t endArray[16][300] = {0};
+uint8_t * hashArray[16][300] = {0};
 
 
 
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
         memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
         memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
-        int arraySpot = priorityArray[p][0];            // find spot in array for this request
+        int arraySpot = priorityArray[p-1][0];            // find spot in array for this request
         priorityArray[p-1][0] = priorityArray[p - 1][0] + 1; // increment count
 
         printf("start: %ld\n", start);
