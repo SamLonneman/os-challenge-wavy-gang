@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
             while (i > -1) {
                 int j;
                 j = priorityArray[i][0];
-                while (j > 0 && priorityArray[i][j] > 0) {
+                while (j > 0 && p < 25) {
 
                     p++;
                     printf("%d\n",p);
@@ -175,9 +175,6 @@ int main(int argc, char *argv[]) {
                 }
                 i = i - 1;
             }
-        }
-        else{
-            printf("IDK what happened");
         }
     }
     return 0;
