@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
 
     // Begin accepting client connections as concurrent threads
     while (1) {
-        i++
+        i++;
         // Accept connection ( will take the first in the queue)
         int newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 
