@@ -14,12 +14,16 @@ int newSockFd;
 
 // each priority level has a row which stores the requests to be run
 int priorityArray[16][300];
+uint64_t startArray[16][300];
+uint64_t endArray[16][300];
+uint8_t hashArray[16][300];
+(int, int) priority_spot;
 
 // first element in each row is a count of the nest place to be filled in the array
-int = 0;
-while(int<16) {
+int int1 = 0;
+while(int1<16) {
     priorityArray[i][0] = 0;
-    int++;
+    int1++;
 }
 
 void terminationHandler(int sig) {
@@ -32,10 +36,12 @@ void terminationHandler(int sig) {
 // param is the reference to the new socket fd --> &newSockFd
 
 
-void* reverseHash(uint8_t hash, uint64_t start, uint64_t end){
+void* reverseHash((int priority, int spot)){
     // Convert byte order as needed
-    start = htobe64(start);
-    end = htobe64(end);
+    uint64_t start = htobe64(startArray[priority][spot]);
+    uint64_t end = htobe64(endArray[priority][spot]);
+    uint8_t hash = hashArray[priority][spot];
+    int newSockFd = priorityArray[priority][spot]
 
     // Search for key in given range corresponding to given hash
     uint8_t calculatedHash[32];
@@ -122,20 +128,21 @@ int main(int argc, char *argv[]) {
 
         int arraySpot = priorityArray[p][0];            // find spot in array for this request
         priorityArray[p][0] = priorityArray[p - 1][0] + 1; // increment count
-
-        (uint8_t, uint64_t, uint64_t) info = (hash, start, end);
-        priorityArray[p][arraySpot] = info;                   // add request to priority array
+        hashArray[p][arraySpot] = hash;
+        startArray[p][arraySpot] = start;
+        endArray[p][arraySpot] = end;
+        priorityArray[p][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
     }
 
     priorityLoop:
-        int_i = 15;
+        int int_i = 15;
         while(int_i>-1) {
-            j = priorityArray[i][0];
+            int j = priorityArray[i][0];
             while(j > 1){
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
                 // Create thread to calculate and return response to client
                 pthread_t tid;
-                pthread_create(&tid, NULL, reverseHash, priorityArray[i][j-1]);
+                pthread_create(&tid, NULL, reverseHash, (i, j));
                 j = j-1;
             }
             int_i = int_i-1;
