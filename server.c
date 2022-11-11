@@ -161,11 +161,12 @@ int main(int argc, char *argv[]) {
         int *newSockFdPtr = malloc(sizeof(int));
         memcpy(newSockFdPtr, &newSockFd, sizeof(int));
 
+        pthread_t tid;
 
         // &readerthreads is the reference to the thread id "readerthreads"
         // the reader function acts as the new thread
         // pointer to newSockFd (&newSockFd) is passed into the reader function
-        pthread_create(&readerthreads[i++], NULL, reader, newSockFdPtr);
+        pthread_create(&tid, NULL, reader, newSockFdPtr);
     }
 }
 
