@@ -87,8 +87,7 @@ int main(int argc, char *argv[]) {
         // check for error
         if (newSockFd < 0) {
             perror("ERROR on accept");
-            // ###exit(1); // exit when the newSockFd < 0 as no more requests
-            goto priorityLoop;
+            exit(1); // exit when the newSockFd < 0 as no more requests
         }
 
         // Read in request through new socket
