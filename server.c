@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
         startArray[p-1][arraySpot] = start;
         endArray[p-1][arraySpot] = end;
         priorityArray[p-1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
-
+        printf("%d\n", requestCounter)
         // TODO: Change this to 250 for submission
         if(requestCounter == 3){
             goto priorityLoop;
@@ -132,6 +132,7 @@ int main(int argc, char *argv[]) {
             j = priorityArray[i][0];
             while (j > 1) {
                 p++;
+                printf("%d\n",p)
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
                 // Convert byte order as needed
                 uint64_t start = htobe64(startArray[i][j]);
