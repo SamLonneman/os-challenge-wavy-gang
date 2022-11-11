@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
             }
         }
         else{
-            printf("IDK what happened")
+            printf("IDK what happened");
         }
     }
     return 0;
