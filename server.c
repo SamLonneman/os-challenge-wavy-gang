@@ -121,10 +121,10 @@ int main(int argc, char *argv[]) {
             while(j > 1){
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
                 // Convert byte order as needed
-                uint64_t start = htobe64(startArray[priority][spot]);
-                uint64_t end = htobe64(endArray[priority][spot]);
-                uint8_t hash = hashArray[priority][spot];
-                int newSockFd = priorityArray[priority][spot]
+                uint64_t start = htobe64(startArray[i][j]);
+                uint64_t end = htobe64(endArray[i][j]);
+                uint8_t hash = hashArray[i][j];
+                int newSockFd = priorityArray[i][j]
 
                 // Search for key in given range corresponding to given hash
                 uint8_t calculatedHash[32];
