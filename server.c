@@ -21,10 +21,6 @@
 // Threads share resources (same address space) and should therefore be more efficient than processes
 // Faster to switch and creat/terminate
 
-
-int readercount = 0;
-int requestCounter = 0;
-pthread_t readerthreads[1000];
 int sockfd;
 int newSockFd;
 
@@ -120,7 +116,6 @@ int main(int argc, char *argv[]) {
     fork();
     fork();
 
-
     // Begin accepting client connections as concurrent threads
     while (1) {
         // Accept connection ( will take the first in the queue)
@@ -131,15 +126,10 @@ int main(int argc, char *argv[]) {
             perror("ERROR on accept");
             exit(1); // exit when the newSockFd < 0 as no more requests
         }
-
-        // Print request received message and increment request counter
-        requestCounter++;
-        printf("[%d] Request received.\n", requestCounter);
-
         int *newSockFdPtr = malloc(sizeof(int));
         memcpy(newSockFdPtr, &newSockFd, sizeof(int));
         pthread_t tid;
-        pthread_create(&readerthreads[requestCounter], NULL, reader, newSockFdPtr);
+        pthread_create(&tid, NULL, reader, newSockFdPtr);
     }
 }
 
