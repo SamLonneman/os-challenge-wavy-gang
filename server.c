@@ -29,8 +29,6 @@
 int readercount = 0;
 int requestCounter = 0;
 pthread_t readerthreads[1000];
-pthread_t tid;
-
 
 
 // function to read from client
@@ -66,15 +64,10 @@ void* reader(void *param){
     // Search for key in given range corresponding to given hash
     uint8_t calculatedHash[32];
     uint64_t key;
-    for (uint64_t i = start; i < end; i++) {
-        SHA256_CTX sha256;
-        SHA256_Init(&sha256);
-        SHA256_Update(&sha256, &i, 8);
-        SHA256_Final(calculatedHash, &sha256);
-        if (memcmp(hash, calculatedHash, 32) == 0) {
-            key = i;
+    for (key = start; key < end; key++) {
+        SHA256((uint8_t *)&key, 8, calculatedHash);
+        if (memcmp(hash, calculatedHash, 32) == 0)
             break;
-        }
     }
 
     // Send resulting key back to client
@@ -114,15 +107,14 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    // Prepare client address and size
-    struct sockaddr_in cli_addr;
-    int clilen = sizeof(cli_addr);
-
     int NUM_CONNECTIONS;                // number of connections
     NUM_CONNECTIONS = 205;              // set to 50 for testing purposes
 
     listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
-    int i = 0;
+
+    // Prepare client address and size
+    struct sockaddr_in cli_addr;
+    int clilen = sizeof(cli_addr);
 
     // Begin accepting client connections as concurrent threads
     while (1) {
@@ -144,6 +136,7 @@ int main(int argc, char *argv[]) {
 
         int *newSockFdPtr = malloc(sizeof(int));
         memcpy(newSockFdPtr, &newSockFd, sizeof(int));
+        pthread_t tid;
 
         // &readerthreads is the reference to the thread id "readerthreads"
         // the reader function acts as the new thread
