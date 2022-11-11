@@ -114,23 +114,25 @@ int main(int argc, char *argv[]) {
     }
 
     priorityLoop:
-        int i = 15;
-        while(i>-1) {
+    {
+        int i;
+        i = 15;
+        while (i > -1) {
             int j;
             j = priorityArray[i][0];
-            while(j > 1){
+            while (j > 1) {
                 // work on request in place priorityArray[i][priorityArray[i][0]-1]
                 // Convert byte order as needed
                 uint64_t start = htobe64(startArray[i][j]);
                 uint64_t end = htobe64(endArray[i][j]);
-                uint8_t* hash = hashArray[i][j];
-                int newSockFd = priorityArray[i][j]
+                uint8_t *hash = hashArray[i][j];
+                int newSockFd = priorityArray[i][j];
 
                 // Search for key in given range corresponding to given hash
                 uint8_t calculatedHash[32];
                 uint64_t key;
                 for (key = start; key < end; key++) {
-                    SHA256((uint8_t *)&key, 8, calculatedHash);
+                    SHA256((uint8_t * ) & key, 8, calculatedHash);
                     if (memcmp(hash, calculatedHash, 32) == 0)
                         break;
                 }
@@ -140,10 +142,11 @@ int main(int argc, char *argv[]) {
                 write(newSockFd, &key, 8);
                 close(newSockFd);
 
-                j = j-1;
+                j = j - 1;
             }
-            i = i-1;
+            i = i - 1;
         }
+    }
 }
 
 
