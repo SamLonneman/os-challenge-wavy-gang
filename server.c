@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
 
 
         // ####pthread_create(&readerthreads[requestCounter], NULL, reader, newSockFdPtr);
-        pthread_create(&tid, NULL, reader, newSockFdPtr);
+        pthread_create(&readerthreads[requestCounter], NULL, reader, newSockFdPtr);
     }
 }
 
