@@ -132,7 +132,6 @@ int main(int argc, char *argv[]) {
         endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
         // TODO: Change this to 250 for submission
-
         if (requestCounter == 25) {
             //goto priorityLoop;
             int p;
@@ -143,7 +142,7 @@ int main(int argc, char *argv[]) {
             while (i > -1) {
                 int j;
                 j = priorityArray[i][0];
-                while (j > 0 && priorityArray[i][j] != 0) {
+                while (j > 0 && priorityArray[i][j] !== 0) {
 
                     p++;
                     printf("%d\n",p);
@@ -172,6 +171,9 @@ int main(int argc, char *argv[]) {
                 }
                 i = i - 1;
             }
+        }
+        else{
+            printf("IDK what happened")
         }
     }
     return 0;
