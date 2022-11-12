@@ -11,6 +11,46 @@
 #include <unistd.h>
 #include "messages.h"
 
+#define SIZE 100
+
+// HASH inspired in https://www.tutorialspoint.com/data_structures_algorithms/hash_table_program_in_c.htm
+
+// Create structs for Table and items
+struct DataItem {
+   uint8_t data;   
+   int key;
+};
+
+// Define Array and Item
+struct DataItem* BigArray[SIZE]; 
+// struct DataItem* dummyItem;
+struct DataItem* item;
+
+
+void insert(int key, uint8_t data) {
+
+    // Create an item in the heap and save the values.
+    struct DataItem *item = (struct DataItem*) malloc(sizeof(struct DataItem));
+    item->data = data;  
+    item->key = key;
+
+    //Initialize  an index
+    int dataIndex = 1;
+
+    //Move in array until an empty or end of the array
+    while(BigArray[dataIndex] != NULL && dataIndex != SIZE) {
+
+       //Go to next cell
+       ++dataIndex;		
+
+       //wrap around the table
+    //    dataIndex %= SIZE;
+    }
+	
+    BigArray[dataIndex] = item;
+    // printf("%ld Guarda \n", BigArray[dataIndex]->key );
+}
+
 
 // Takes in pointer to int newsockfd on the heap
 void* reverseHash(void *newsockfdPtr) {
@@ -45,7 +85,8 @@ void* reverseHash(void *newsockfdPtr) {
         if (memcmp(hash, calculatedHash, 32) == 0)
             break;
     }
-
+    insert(key, *calculatedHash);
+    // printf("%ld Alo?", key);
     // Send resulting key back to client
     key = be64toh(key);
     write(newsockfd, &key, 8);
@@ -96,7 +137,6 @@ int main(int argc, char *argv[]) {
             perror("ERROR on accept");
             exit(1);
         }
-
         // Temporarily place newsockfd on the heap
         int *newsockfdPtr = malloc(sizeof(int));
         memcpy(newsockfdPtr, &newsockfd, sizeof(int));
