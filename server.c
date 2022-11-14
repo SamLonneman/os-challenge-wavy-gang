@@ -14,13 +14,10 @@ int newSockFd;
 int requestCounter;
 
 // each priority level has a row which stores the requests to be run
-//typedef uint32_t[32] hash_t;
 int priorityArray[16][300] = {0};
-//uint64_t startArray[16][300] = {0};
-//uint64_t endArray[16][300] = {0};
-//hash_t hashArray[16][300] = {0};
-
-
+uint64_t startArray[16][300] = {0};
+uint64_t endArray[16][300] = {0};
+uint8_t *hashArray[16][300] = {0};
 
 
 void terminationHandler(int sig) {
@@ -31,8 +28,6 @@ void terminationHandler(int sig) {
 
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
-
-
 
 
 
@@ -115,25 +110,25 @@ int main(int argc, char *argv[]) {
         read(newSockFd, buffer, PACKET_REQUEST_SIZE);
 
         // Declare request components
-        //hash_t hash;
-        //uint64_t start;
-        //uint64_t end;
+        uint8_t hash[32];
+        uint64_t start;
+        uint64_t end;
         uint8_t p;
 
         // Extract components from request
-        //memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-        //memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-        //memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+        memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+        memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+        memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
         memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
         int arraySpot = priorityArray[p - 1][0];            // find spot in array for this request
         priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1; // increment count
 
-       // hashArray[p - 1][arraySpot] = hash;
-        //startArray[p - 1][arraySpot] = start;
-        //endArray[p - 1][arraySpot] = end;
+        hashArray[p - 1][arraySpot] = hash;
+        startArray[p - 1][arraySpot] = start;
+        endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
-        printf("Request count before SHA : %d\n", requestCounter);
+
         // TODO: Change this to 250 for submission
         if (requestCounter == 100) {
             //goto priorityLoop;
@@ -145,25 +140,12 @@ int main(int argc, char *argv[]) {
                 int j;
                 j = priorityArray[i][0]-1;        // j is the next spot to look at to be processed
                 while (j > 0) {
-                    printf("Request num %d\n", p);
                     // work on request in place priorityArray[i][priorityArray[i][0]-1]
                     // Convert byte order as needed
-                    //uint64_t start = htobe64(startArray[i][j]);
-                    //uint64_t end = htobe64(endArray[i][j]);
-                    //hash_t hash = hashArray[i][j];
+                    uint64_t start = htobe64(startArray[i][j]);
+                    uint64_t end = htobe64(endArray[i][j]);
+                    uint8_t *hash = hashArray[i][j];
                     newSockFd = priorityArray[i][j];
-
-                    uint8_t hash[32];
-                    uint64_t start;
-                    uint64_t end;
-
-                    printf("before read");
-                    read(newSockFd, buffer, PACKET_REQUEST_SIZE);
-                    printf("after read");
-                    memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-                    memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-                    memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
-                    printf("aftercopies");
 
                     uint8_t calculatedHash[32];
                     uint64_t key;
