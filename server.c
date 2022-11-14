@@ -22,7 +22,6 @@ uint8_t * hashArray[16][300] = {0};
 
 
 
-
 void terminationHandler(int sig) {
     close(sockfd);
     close(newSockFd);
@@ -95,8 +94,8 @@ int main(int argc, char *argv[]) {
     int clilen = sizeof(cli_addr);
 
     // Fork into 4 processes, one for each core
-    fork();
-    fork();
+    //fork();
+    //fork();
 
     // Accept client connections until there are none left
     while (1) {
@@ -134,18 +133,16 @@ int main(int argc, char *argv[]) {
         endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
         // TODO: Change this to 250 for submission
-        if (requestCounter == 25) {
+        if (requestCounter == 100) {
             //goto priorityLoop;
             int p;
             p = 0;
             int i;
             i = 15;
-            while (i > -1) {
+            while (i > -1 && p <= 100) {
                 int j;
                 j = priorityArray[i][0];
                 while (j > 1) {
-
-
                     // work on request in place priorityArray[i][priorityArray[i][0]-1]
                     // Convert byte order as needed
                     uint64_t start = htobe64(startArray[i][j-1]);
@@ -171,6 +168,7 @@ int main(int argc, char *argv[]) {
                 }
                 i = i - 1;
             }
+            printf("We are now exiting the server")
         }
     }
     return 0;
