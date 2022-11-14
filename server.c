@@ -125,7 +125,8 @@ int main(int argc, char *argv[]) {
         int arraySpot = priorityArray[p - 1][0];            // find spot in array for this request
         priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1; // increment count
 
-        hashArray[p - 1][arraySpot] = hash;
+        memcpy(hashArray[p - 1][arraySpot], hash, 32);
+//        hashArray[p - 1][arraySpot] = hash;
         startArray[p - 1][arraySpot] = start;
         endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
