@@ -36,6 +36,7 @@ void* reader(void *arg){
         while (j > 0) {
             // work on request in place priorityArray[i][priorityArray[i][0]-1]
             // Convert byte order as needed
+            newSockFd;
             newSockFd = priorityArray[i][j];
             if(newSockFd != -20) {
                 uint64_t start = htobe64(startArray[i][j]);
@@ -78,9 +79,6 @@ int main(int argc, char *argv[]) {
     }
 
     requestCounter = 0;
-
-    // Set up signal for graceful termination
-    signal(SIGINT, terminationHandler);
     sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket --> holds the return of the socket function
 
     // Set the port as available in case it is not available, and check for error
