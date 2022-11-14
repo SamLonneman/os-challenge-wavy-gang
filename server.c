@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
     }
 
     int NUM_CONNECTIONS;                // number of connections
-    NUM_CONNECTIONS = 100;              // set to 50 for testing purposes
+    NUM_CONNECTIONS = 50;              // set to 50 for testing purposes
 
     listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
 
@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
         memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
         memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
-        int arraySpot = priorityArray[p - 1][0];            // find spot in array for this request
+        int arraySpot = priorityArray[p - 1][0];               // find spot in array for this request
         priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1; // increment count
 
         memcpy(hashArray[p - 1][arraySpot], hash, 32);
@@ -149,8 +149,6 @@ int main(int argc, char *argv[]) {
 
         if(p<100) {
             p++;
-            int *newSockFdPtr = malloc(sizeof(int));
-            memcpy(newSockFdPtr, &newSockFd, sizeof(int));
             pthread_t tid;
             pthread_create(&tid, NULL, reader, NULL);
         }
