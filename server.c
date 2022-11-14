@@ -162,19 +162,17 @@ int main(int argc, char *argv[]) {
                     hash_t *hash = hashArray[i][j];
                     newSockFd = priorityArray[i][j];
 
-                    ///
-                    //uint8_t calculatedHash[32];
-                    //uint64_t key;
+                    uint8_t calculatedHash[32];
+                    hash_t key;
 
-                    //for (key = start; key < end; key++) {
-                        //SHA256((uint8_t * ) & key, 8, calculatedHash);
-                        //if (memcmp(hash, calculatedHash, 32) == 0)
-                            //break;
-                    //}
+                    for (key = start; key < end; key++) {
+                        SHA256((uint8_t * ) & key, 8, calculatedHash);
+                        if (memcmp(hash, calculatedHash, 32) == 0)
+                            break;
+                    }
 
-                    //key = be64toh(key);
-                    ///
-                    key = results[i][j]
+                    key = be64toh(key);
+
                     write(newSockFd, &key, 8);
                     close(newSockFd);
                     j = j - 1;
