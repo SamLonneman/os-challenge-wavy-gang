@@ -36,7 +36,7 @@ void* reader(void *arg){
         while (j > 0) {
             // work on request in place priorityArray[i][priorityArray[i][0]-1]
             // Convert byte order as needed
-            newSockFd;
+            int newSockFd;
             newSockFd = priorityArray[i][j];
             if(newSockFd != -20) {
                 uint64_t start = htobe64(startArray[i][j]);
