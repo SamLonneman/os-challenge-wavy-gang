@@ -137,7 +137,6 @@ int main(int argc, char *argv[]) {
         if (requestCounter == 25) {
             //goto priorityLoop;
             int p;
-
             p = 0;
             int i;
             i = 15;
