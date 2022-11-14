@@ -14,11 +14,11 @@ int newSockFd;
 int requestCounter;
 
 // each priority level has a row which stores the requests to be run
-typedef uint8_t[32] hash_t;
+//typedef uint32_t[32] hash_t;
 int priorityArray[16][300] = {0};
-uint64_t startArray[16][300] = {0};
-uint64_t endArray[16][300] = {0};
-hash_t hashArray[16][300] = {0};
+//uint64_t startArray[16][300] = {0};
+//uint64_t endArray[16][300] = {0};
+//hash_t hashArray[16][300] = {0};
 
 
 
@@ -115,23 +115,23 @@ int main(int argc, char *argv[]) {
         read(newSockFd, buffer, PACKET_REQUEST_SIZE);
 
         // Declare request components
-        hash_t hash;
-        uint64_t start;
-        uint64_t end;
+        //hash_t hash;
+        //uint64_t start;
+        //uint64_t end;
         uint8_t p;
 
         // Extract components from request
-        memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-        memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-        memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+        //memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+        //memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+        //memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
         memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
         int arraySpot = priorityArray[p - 1][0];            // find spot in array for this request
         priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1; // increment count
 
-        hashArray[p - 1][arraySpot] = hash;
-        startArray[p - 1][arraySpot] = start;
-        endArray[p - 1][arraySpot] = end;
+       // hashArray[p - 1][arraySpot] = hash;
+        //startArray[p - 1][arraySpot] = start;
+        //endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
 
         // TODO: Change this to 250 for submission
@@ -147,10 +147,19 @@ int main(int argc, char *argv[]) {
                 while (j > 0) {
                     // work on request in place priorityArray[i][priorityArray[i][0]-1]
                     // Convert byte order as needed
-                    uint64_t start = htobe64(startArray[i][j]);
-                    uint64_t end = htobe64(endArray[i][j]);
-                    hash_t hash = hashArray[i][j];
+                    //uint64_t start = htobe64(startArray[i][j]);
+                    //uint64_t end = htobe64(endArray[i][j]);
+                    //hash_t hash = hashArray[i][j];
                     newSockFd = priorityArray[i][j];
+
+                    hash_t hash;
+                    uint64_t start;
+                    uint64_t end;
+
+                    read(newSockFd, buffer, PACKET_REQUEST_SIZE)
+                    memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+                    memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+                    memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
 
                     uint8_t calculatedHash[32];
                     uint64_t key;
