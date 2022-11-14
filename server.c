@@ -18,7 +18,8 @@ typedef uint8_t hash_t[32];
 int priorityArray[16][300] = {0};
 uint64_t startArray[16][300] = {0};
 uint64_t endArray[16][300] = {0};
-hash_t *hashArray[16][300] = {0};
+//hash_t *hashArray[16][300] = {0};
+hash_t hashArray[16][300] = {0};
 
 void terminationHandler(int sig) {
     close(sockfd);
@@ -144,7 +145,7 @@ int main(int argc, char *argv[]) {
                     // Convert byte order as needed
                     uint64_t start = htobe64(startArray[i][j]);
                     uint64_t end = htobe64(endArray[i][j]);
-                    hash_t *hash = hashArray[i][j];
+                    hash_t hash = hashArray[i][j];
                     newSockFd = priorityArray[i][j];
 
                     uint8_t calculatedHash[32];
