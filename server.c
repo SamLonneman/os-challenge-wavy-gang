@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
             int *newSockFdPtr = malloc(sizeof(int));
             memcpy(newSockFdPtr, &newSockFd, sizeof(int));
             pthread_t tid;
-            pthread_create(&tid, NULL, reader, argc);
+            pthread_create(&tid, NULL, reader, NULL);
         }
     }
 }
