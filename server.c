@@ -14,10 +14,11 @@ int newSockFd;
 int requestCounter;
 
 // each priority level has a row which stores the requests to be run
+typedef uint8_t hash_t[32];
 int priorityArray[16][300] = {0};
 uint64_t startArray[16][300] = {0};
 uint64_t endArray[16][300] = {0};
-uint8_t *hashArray[16][300] = {0};
+hash_t *hashArray[16][300] = {0};
 
 
 void terminationHandler(int sig) {
@@ -110,7 +111,7 @@ int main(int argc, char *argv[]) {
         read(newSockFd, buffer, PACKET_REQUEST_SIZE);
 
         // Declare request components
-        uint8_t hash[32];
+        hash_t hash[32];
         uint64_t start;
         uint64_t end;
         uint8_t p;
