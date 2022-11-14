@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
                     uint64_t start;
                     uint64_t end;
 
-                    read(newSockFd, buffer, PACKET_REQUEST_SIZE)
+                    read(newSockFd, buffer, PACKET_REQUEST_SIZE);
                     memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
                     memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
                     memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
