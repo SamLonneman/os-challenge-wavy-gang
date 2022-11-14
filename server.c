@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
                     //hash_t hash = hashArray[i][j];
                     newSockFd = priorityArray[i][j];
 
-                    hash_t hash;
+                    uint8_t hash[32];
                     uint64_t start;
                     uint64_t end;
 
