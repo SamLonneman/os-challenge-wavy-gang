@@ -13,7 +13,7 @@ int sockfd;
 int newSockFd;
 int requestCounter;
 int requestsLeft;
-p = 0;
+int p = 0;
 
 
 // each priority level has a row which stores the requests to be run
