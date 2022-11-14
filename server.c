@@ -19,7 +19,6 @@ int priorityArray[16][300] = {0};
 uint64_t startArray[16][300] = {0};
 uint64_t endArray[16][300] = {0};
 hash_t *hashArray[16][300] = {0};
-hash_t results[16][300] = {0};
 
 void terminationHandler(int sig) {
     close(sockfd);
@@ -149,7 +148,7 @@ int main(int argc, char *argv[]) {
                     newSockFd = priorityArray[i][j];
 
                     uint8_t calculatedHash[32];
-                    hash_t key;
+                    uint64_t key;
 
                     for (key = start; key < end; key++) {
                         SHA256((uint8_t * ) & key, 8, calculatedHash);
