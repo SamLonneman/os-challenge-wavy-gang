@@ -13,6 +13,7 @@ int sockfd;
 int newSockFd;
 int requestCounter;
 int requestsLeft;
+p = 0;
 
 
 // each priority level has a row which stores the requests to be run
@@ -35,6 +36,7 @@ void terminationHandler(int sig) {
 void* reader(void *param){
     newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
     free(param);
+    printf("%d",p);
 
     int i;
     i = 15;     // i is the priority levels
@@ -174,6 +176,8 @@ int main(int argc, char *argv[]) {
 
         int *newSockFdPtr = malloc(sizeof(int));
         memcpy(newSockFdPtr, &newSockFd, sizeof(int));
+
+        p++;
 
         pthread_t tid;
         pthread_create(&tid, NULL, reader, newSockFdPtr);
