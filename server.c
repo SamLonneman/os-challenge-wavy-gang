@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
         read(newSockFd, buffer, PACKET_REQUEST_SIZE);
 
         // Declare request components
-        hash_t hash[32];
+        hash_t hash;
         uint64_t start;
         uint64_t end;
         uint8_t p;
