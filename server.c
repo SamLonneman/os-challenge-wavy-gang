@@ -36,7 +36,7 @@ void terminationHandler(int sig) {
 void* reader(void *param){
     newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
     free(param);
-    printf("%d",p);
+    printf("%d\n",p);
 
     int i;
     i = 15;     // i is the priority levels
@@ -136,6 +136,8 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr);
 
+    fork();
+    fork();
 
     // Accept client connections until there are none left
     while (1) {
