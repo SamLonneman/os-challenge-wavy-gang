@@ -12,6 +12,8 @@
 int sockfd;
 int newSockFd;
 int requestCounter;
+int requestsLeft;
+
 
 // each priority level has a row which stores the requests to be run
 typedef uint8_t hash_t[32];
@@ -30,6 +32,46 @@ void terminationHandler(int sig) {
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
 
+void* reader(void *param){
+    int i;
+    i = 15;     // i is the priority levels
+    while (i > -1) {
+        int j;
+        j = priorityArray[i][0]-1;        // j is the next spot to look at to be processed
+        while (j > 0) {
+            // work on request in place priorityArray[i][priorityArray[i][0]-1]
+            // Convert byte order as needed
+            if(newSockFd != 0) {
+                uint64_t start = htobe64(startArray[i][j]);
+                uint64_t end = htobe64(endArray[i][j]);
+                hash_t hash;
+                memcpy(hash, hashArray[i][j], 32);
+                //hash_t hash = hashArray[i][j];
+                newSockFd = priorityArray[i][j];
+
+                uint8_t calculatedHash[32];
+                uint64_t key;
+
+                for (key = start; key < end; key++) {
+                    SHA256((uint8_t * ) & key, 8, calculatedHash);
+                    if (memcmp(hash, calculatedHash, 32) == 0)
+                        break;
+                }
+
+                key = be64toh(key);
+
+                write(newSockFd, &key, 8);
+                close(newSockFd);
+            }
+            j = j - 1;
+            p++;
+        }
+        i = i - 1;
+    }
+
+    close(newSockFd);
+    pthread_exit(NULL);
+}
 
 
 
@@ -90,9 +132,6 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr);
 
-    // Fork into 4 processes, one for each core
-    fork();
-    fork();
 
     // Accept client connections until there are none left
     while (1) {
@@ -131,46 +170,8 @@ int main(int argc, char *argv[]) {
         endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
 
-        // TODO: Change this to 250 for submission
-        if (requestCounter == 25) {
-            //goto priorityLoop;
-            int p;      // p is the number of requests left to process
-            p = 0;
-            int i;
-            i = 15;     // i is the priority levels
-            while (i > -1 && p <= 100) {
-                int j;
-                j = priorityArray[i][0]-1;        // j is the next spot to look at to be processed
-                while (j > 0) {
-                    // work on request in place priorityArray[i][priorityArray[i][0]-1]
-                    // Convert byte order as needed
-                    uint64_t start = htobe64(startArray[i][j]);
-                    uint64_t end = htobe64(endArray[i][j]);
-                    hash_t hash;
-                    memcpy(hash, hashArray[i][j], 32);
-                    //hash_t hash = hashArray[i][j];
-                    newSockFd = priorityArray[i][j];
-
-                    uint8_t calculatedHash[32];
-                    uint64_t key;
-
-                    for (key = start; key < end; key++) {
-                        SHA256((uint8_t * ) & key, 8, calculatedHash);
-                        if (memcmp(hash, calculatedHash, 32) == 0)
-                            break;
-                    }
-
-                    key = be64toh(key);
-
-                    write(newSockFd, &key, 8);
-                    close(newSockFd);
-                    j = j - 1;
-                    p++;
-                }
-                i = i - 1;
-            }
-            printf("We are now exiting the server");
-        }
+        pthread_t tid;
+        pthread_create(&tid, NULL, reader);
     }
     return 0;
 }
