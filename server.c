@@ -19,7 +19,7 @@ int priorityArray[16][300] = {0};
 uint64_t startArray[16][300] = {0};
 uint64_t endArray[16][300] = {0};
 hash_t *hashArray[16][300] = {0};
-
+hash_t results[16][300] = {0};
 
 void terminationHandler(int sig) {
     close(sockfd);
@@ -125,10 +125,24 @@ int main(int argc, char *argv[]) {
         int arraySpot = priorityArray[p - 1][0];            // find spot in array for this request
         priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1; // increment count
 
+
+        // TODO
         hashArray[p - 1][arraySpot] = hash;
         startArray[p - 1][arraySpot] = start;
         endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
+
+        uint8_t calculatedHash[32];
+        uint64_t key;
+
+        for (key = start; key < end; key++) {
+            SHA256((uint8_t * ) & key, 8, calculatedHash);
+            if (memcmp(hash, calculatedHash, 32) == 0)
+                break;
+        }
+
+        key = be64toh(key);
+        results[p-1][arraySpot] = key;
 
         // TODO: Change this to 250 for submission
         if (requestCounter == 100) {
@@ -148,16 +162,19 @@ int main(int argc, char *argv[]) {
                     hash_t *hash = hashArray[i][j];
                     newSockFd = priorityArray[i][j];
 
-                    uint8_t calculatedHash[32];
-                    uint64_t key;
+                    ///
+                    //uint8_t calculatedHash[32];
+                    //uint64_t key;
 
-                    for (key = start; key < end; key++) {
-                        SHA256((uint8_t * ) & key, 8, calculatedHash);
-                        if (memcmp(hash, calculatedHash, 32) == 0)
-                            break;
-                    }
+                    //for (key = start; key < end; key++) {
+                        //SHA256((uint8_t * ) & key, 8, calculatedHash);
+                        //if (memcmp(hash, calculatedHash, 32) == 0)
+                            //break;
+                    //}
 
-                    key = be64toh(key);
+                    //key = be64toh(key);
+                    ///
+                    key = results[i][j]
                     write(newSockFd, &key, 8);
                     close(newSockFd);
                     j = j - 1;
