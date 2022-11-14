@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
     // Accept client connections until there are none left
     while (1) {
         // Accept connection ( will take the first in the queue)
-        newSockFd;
+        int newSockFd;
         newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         requestCounter++;
 
