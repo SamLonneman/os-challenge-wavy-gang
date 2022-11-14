@@ -32,7 +32,7 @@ void terminationHandler(int sig) {
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
 
-void* reader(void *param){
+void* reader(){
     int i;
     i = 15;     // i is the priority levels
     while (i > -1) {
@@ -64,7 +64,6 @@ void* reader(void *param){
                 close(newSockFd);
             }
             j = j - 1;
-            p++;
         }
         i = i - 1;
     }
