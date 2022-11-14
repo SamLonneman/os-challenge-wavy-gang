@@ -13,42 +13,58 @@
 
 #define SIZE 100
 
-// HASH inspired in https://www.tutorialspoint.com/data_structures_algorithms/hash_table_program_in_c.htm
+// Array inspired in https://www.tutorialspoint.com/data_structures_algorithms/hash_table_program_in_c.htm
+
+//Just a variable that saves the place in use in the array.
+int place = 1;
 
 // Create structs for Table and items
 struct DataItem {
-   uint8_t data;   
-   int key;
+   uint8_t data[32];   
+   uint64_t key;
 };
 
 // Define Array and Item
 struct DataItem* BigArray[SIZE]; 
-// struct DataItem* dummyItem;
 struct DataItem* item;
 
-
-void insert(int key, uint8_t data) {
+void insert(uint64_t key, uint8_t* data) {
 
     // Create an item in the heap and save the values.
     struct DataItem *item = (struct DataItem*) malloc(sizeof(struct DataItem));
-    item->data = data;  
+    memcpy(item->data, data , 32);
     item->key = key;
 
     //Initialize  an index
     int dataIndex = 1;
 
-    //Move in array until an empty or end of the array
+    //Move in array until an empty or end of the array //Instead we can create a variable that counts the index of the aray
     while(BigArray[dataIndex] != NULL && dataIndex != SIZE) {
 
        //Go to next cell
-       ++dataIndex;		
+       ++dataIndex;	
 
-       //wrap around the table
-    //    dataIndex %= SIZE;
     }
 	
     BigArray[dataIndex] = item;
-    // printf("%ld Guarda \n", BigArray[dataIndex]->key );
+    ++place;	// Index of the array?
+}
+
+struct DataItem *search(uint8_t data) {
+
+    //move in array
+    for (int index = 1; index < place; index++) {
+        
+        // If find a match return the value
+        if (BigArray[index]->data == key){
+            return BigArray[index];
+        }
+
+        // if (memcmp(hash, calculatedHash, 32) == 0)
+        //     break;
+    }
+          
+    return NULL;        
 }
 
 
@@ -85,8 +101,31 @@ void* reverseHash(void *newsockfdPtr) {
         if (memcmp(hash, calculatedHash, 32) == 0)
             break;
     }
-    insert(key, *calculatedHash);
-    // printf("%ld Alo?", key);
+
+    // Insert the new item in the array
+    insert(key, calculatedHash);
+
+    for (int i = 1; i < place ; i++) {
+        printf("N %d es el %d ", i, BigArray[i]->key);
+
+        for (int g = 0; g < 32; g++){
+            printf("%02x", BigArray[i]->data[g]);
+            
+
+            
+        
+        }
+        printf("\n");
+       
+    }
+    printf("EL ULTIMO ");
+    for (int h = 0; h < 32; h++){
+            
+            printf("%02x", calculatedHash[h]);          
+        
+    }
+    printf("\n");
+
     // Send resulting key back to client
     key = be64toh(key);
     write(newsockfd, &key, 8);
@@ -144,5 +183,8 @@ int main(int argc, char *argv[]) {
         // Create thread to calculate and return response to client
         pthread_t tid;
         pthread_create(&tid, NULL, reverseHash, newsockfdPtr);
+
+       
     }
+    
 }
