@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
                 }
                 i = i - 1;
             }
-            printf("We are now exiting the server")
+            printf("We are now exiting the server");
         }
     }
     return 0;
