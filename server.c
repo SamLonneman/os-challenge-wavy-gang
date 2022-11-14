@@ -53,6 +53,7 @@ void* reader(void *param){
                 memcpy(hash, hashArray[i][j], 32);
                 //hash_t hash = hashArray[i][j];
                 newSockFd = priorityArray[i][j];
+                priorityArray[i][j] = 0;
 
                 uint8_t calculatedHash[32];
                 uint64_t key;
@@ -179,10 +180,12 @@ int main(int argc, char *argv[]) {
         int *newSockFdPtr = malloc(sizeof(int));
         memcpy(newSockFdPtr, &newSockFd, sizeof(int));
 
-        p++;
 
-        pthread_t tid;
-        pthread_create(&tid, NULL, reader, newSockFdPtr);
+        if(p<100) {
+            p++;
+            pthread_t tid;
+            pthread_create(&tid, NULL, reader, newSockFdPtr);
+        }
     }
     return 0;
 }
