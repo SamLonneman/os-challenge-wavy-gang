@@ -145,6 +145,7 @@ int main(int argc, char *argv[]) {
                 int j;
                 j = priorityArray[i][0]-1;        // j is the next spot to look at to be processed
                 while (j > 0) {
+                    printf("Request num %d\n", p);
                     // work on request in place priorityArray[i][priorityArray[i][0]-1]
                     // Convert byte order as needed
                     //uint64_t start = htobe64(startArray[i][j]);
