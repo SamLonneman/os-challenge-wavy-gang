@@ -50,18 +50,15 @@ void insert(uint64_t key, uint8_t* data) {
     ++place;	// Index of the array?
 }
 
-struct DataItem *search(uint8_t data) {
-
+struct DataItem *search(uint8_t* data) {
+    printf("Entra \n");
     //move in array
     for (int index = 1; index < place; index++) {
-        
-        // If find a match return the value
-        if (BigArray[index]->data == key){
+        // If find a match return the value    
+        if (memcmp(BigArray[index]->data, data, 32) == 0){
+            printf("LO ENCONTRO \n");
             return BigArray[index];
         }
-
-        // if (memcmp(hash, calculatedHash, 32) == 0)
-        //     break;
     }
           
     return NULL;        
@@ -94,17 +91,20 @@ void* reverseHash(void *newsockfdPtr) {
     end = htobe64(end);
 
     // Search for key in given range corresponding to given hash
+
+    
     uint8_t calculatedHash[32];
     uint64_t key;
     for (key = start; key < end; key++) {
         SHA256((uint8_t *)&key, 8, calculatedHash);
+
         if (memcmp(hash, calculatedHash, 32) == 0)
             break;
     }
-
+    struct DataItem* value = search(hash);
     // Insert the new item in the array
     insert(key, calculatedHash);
-
+    
     for (int i = 1; i < place ; i++) {
         printf("N %d es el %d ", i, BigArray[i]->key);
 
