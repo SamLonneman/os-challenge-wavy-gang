@@ -10,7 +10,6 @@
 #include "messages.h"
 
 int sockfd;
-int newSockFd;
 int requestCounter;
 int requestsLeft;
 int p = 0;
@@ -21,21 +20,12 @@ typedef uint8_t hash_t[32];
 int priorityArray[16][300] = {0};
 uint64_t startArray[16][300] = {0};
 uint64_t endArray[16][300] = {0};
-//hash_t *hashArray[16][300] = {0};
 hash_t hashArray[16][300] = {0};
 
-void terminationHandler(int sig) {
-    close(sockfd);
-    close(newSockFd);
-    exit(0);
-}
 
-// function to read from client
-// param is the reference to the new socket fd --> &newSockFd
-
-void* reader(void *param){
-    newSockFd = *(int*)(param);// retrieves the value of newSockFd from its address
-    free(param);
+//void* reader(void *param){
+void* reader(void *arg){
+    free(arg);
     printf("%d\n",p);
 
     int i;
@@ -73,7 +63,6 @@ void* reader(void *param){
         }
         i = i - 1;
     }
-
     close(newSockFd);
     pthread_exit(NULL);
 }
@@ -82,31 +71,16 @@ void* reader(void *param){
 
 int main(int argc, char *argv[]) {
 // first element in each row is a count of the nest place to be filled in the array
-    priorityArray[0][0] = 1;
-    priorityArray[1][0] = 1;
-    priorityArray[2][0] = 1;
-    priorityArray[3][0] = 1;
-    priorityArray[4][0] = 1;
-    priorityArray[5][0] = 1;
-    priorityArray[6][0] = 1;
-    priorityArray[7][0] = 1;
-    priorityArray[8][0] = 1;
-    priorityArray[9][0] = 1;
-    priorityArray[10][0] = 1;
-    priorityArray[11][0] = 1;
-    priorityArray[12][0] = 1;
-    priorityArray[13][0] = 1;
-    priorityArray[14][0] = 1;
-    priorityArray[15][0] = 1;
+    num = 0;
+    while (num <= 15) {
+    priorityArray[num][0] = 1;
+    num++;
+    }
 
     requestCounter = 0;
 
-
-
-
     // Set up signal for graceful termination
     signal(SIGINT, terminationHandler);
-
     sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket --> holds the return of the socket function
 
     // Set the port as available in case it is not available, and check for error
@@ -137,12 +111,10 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr);
 
-    // fork()
-    // fork()
-
     // Accept client connections until there are none left
     while (1) {
         // Accept connection ( will take the first in the queue)
+        newSockFd;
         newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         requestCounter++;
 
@@ -172,7 +144,6 @@ int main(int argc, char *argv[]) {
         priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1; // increment count
 
         memcpy(hashArray[p - 1][arraySpot], hash, 32);
-//        hashArray[p - 1][arraySpot] = hash;
         startArray[p - 1][arraySpot] = start;
         endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
@@ -185,5 +156,4 @@ int main(int argc, char *argv[]) {
             pthread_create(&tid, NULL, reader, newSockFdPtr);
         }
     }
-    return 0;
 }
