@@ -72,6 +72,7 @@ void* reader(void *arg){
 
 int main(int argc, char *argv[]) {
 // first element in each row is a count of the nest place to be filled in the array
+    int num;
     num = 0;
     while (num <= 15) {
     priorityArray[num][0] = 1;
