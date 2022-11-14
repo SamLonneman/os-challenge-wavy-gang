@@ -32,7 +32,7 @@ void terminationHandler(int sig) {
 // function to read from client
 // param is the reference to the new socket fd --> &newSockFd
 
-void* reader(){
+void* reader(int num){
     int i;
     i = 15;     // i is the priority levels
     while (i > -1) {
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
 
         pthread_t tid;
-        pthread_create(&tid, NULL, reader);
+        pthread_create(&tid, NULL, reader, 0);
     }
     return 0;
 }
