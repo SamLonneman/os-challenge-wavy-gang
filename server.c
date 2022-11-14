@@ -44,8 +44,9 @@ void* worker_thread(void *pq) {
         key = be64toh(key);
         write(request->newsockfd, &key, 8);
 
-        // Close socket
+        // Close socket and free request
         close(request->newsockfd);
+        free(request);
     }
 }
 
