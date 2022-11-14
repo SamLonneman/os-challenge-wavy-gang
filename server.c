@@ -46,13 +46,13 @@ void* reader(void *param){
         while (j > 0) {
             // work on request in place priorityArray[i][priorityArray[i][0]-1]
             // Convert byte order as needed
+            newSockFd = priorityArray[i][j];
             if(newSockFd != 0) {
                 uint64_t start = htobe64(startArray[i][j]);
                 uint64_t end = htobe64(endArray[i][j]);
                 hash_t hash;
                 memcpy(hash, hashArray[i][j], 32);
                 //hash_t hash = hashArray[i][j];
-                newSockFd = priorityArray[i][j];
                 priorityArray[i][j] = 0;
 
                 uint8_t calculatedHash[32];
@@ -177,12 +177,12 @@ int main(int argc, char *argv[]) {
         endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
 
-        int *newSockFdPtr = malloc(sizeof(int));
-        memcpy(newSockFdPtr, &newSockFd, sizeof(int));
 
 
         if(p<100) {
             p++;
+            int *newSockFdPtr = malloc(sizeof(int));
+            memcpy(newSockFdPtr, &newSockFd, sizeof(int));
             pthread_t tid;
             pthread_create(&tid, NULL, reader, newSockFdPtr);
         }
