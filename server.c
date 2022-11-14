@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
         read(newSockFd, buffer, PACKET_REQUEST_SIZE);
 
         // Declare request components
-        uint8_t hash[32];
+        hash_t hash;
         uint64_t start;
         uint64_t end;
         uint8_t p;
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
                     // Convert byte order as needed
                     uint64_t start = htobe64(startArray[i][j]);
                     uint64_t end = htobe64(endArray[i][j]);
-                    uint8_t *hash = hashArray[i][j];
+                    hash_t hash = hashArray[i][j];
                     newSockFd = priorityArray[i][j];
 
                     uint8_t calculatedHash[32];
