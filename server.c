@@ -135,20 +135,20 @@ int main(int argc, char *argv[]) {
         // TODO: Change this to 250 for submission
         if (requestCounter == 100) {
             //goto priorityLoop;
-            int p;
+            int p;      // p is the number of requests left to process
             p = 0;
             int i;
-            i = 15;
+            i = 15;     // i is the priority levels
             while (i > -1 && p <= 100) {
                 int j;
-                j = priorityArray[i][0];
-                while (j > 1) {
+                j = priorityArray[i][0]-1;        // j is the next spot to look at to be processed
+                while (j > 0) {
                     // work on request in place priorityArray[i][priorityArray[i][0]-1]
                     // Convert byte order as needed
-                    uint64_t start = htobe64(startArray[i][j-1]);
-                    uint64_t end = htobe64(endArray[i][j-1]);
-                    uint8_t *hash = hashArray[i][j-1];
-                    newSockFd = priorityArray[i][j-1];
+                    uint64_t start = htobe64(startArray[i][j]);
+                    uint64_t end = htobe64(endArray[i][j]);
+                    uint8_t *hash = hashArray[i][j];
+                    newSockFd = priorityArray[i][j];
 
                     uint8_t calculatedHash[32];
                     uint64_t key;
@@ -164,7 +164,6 @@ int main(int argc, char *argv[]) {
                     close(newSockFd);
                     j = j - 1;
                     p++;
-                    printf("%d\n",p);
                 }
                 i = i - 1;
             }
