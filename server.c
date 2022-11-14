@@ -14,10 +14,11 @@ int newSockFd;
 int requestCounter;
 
 // each priority level has a row which stores the requests to be run
+typedef unit8_t[32] hash_t;
 int priorityArray[16][300] = {0};
 uint64_t startArray[16][300] = {0};
 uint64_t endArray[16][300] = {0};
-uint8_t * hashArray[16][300] = {0};
+hash_t *hashArray[16][300] = {0};
 
 
 
