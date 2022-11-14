@@ -136,8 +136,8 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr);
 
-    fork();
-    fork();
+    // fork()
+    // fork()
 
     // Accept client connections until there are none left
     while (1) {
