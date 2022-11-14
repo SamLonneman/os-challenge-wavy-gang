@@ -27,6 +27,7 @@ hash_t hashArray[16][300] = {0};
 void* reader(void *arg){
     free(arg);
     printf("%d\n",p);
+    int newSockFd;
 
     int i;
     i = 15;     // i is the priority levels
@@ -36,7 +37,6 @@ void* reader(void *arg){
         while (j > 0) {
             // work on request in place priorityArray[i][priorityArray[i][0]-1]
             // Convert byte order as needed
-            int newSockFd;
             newSockFd = priorityArray[i][j];
             if(newSockFd != -20) {
                 uint64_t start = htobe64(startArray[i][j]);
