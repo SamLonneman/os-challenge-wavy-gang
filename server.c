@@ -18,7 +18,7 @@ typedef unit8_t[32] hash_t;
 int priorityArray[16][300] = {0};
 uint64_t startArray[16][300] = {0};
 uint64_t endArray[16][300] = {0};
-hash_t *hashArray[16][300] = {0};
+hash_t hashArray[16][300] = {0};
 
 
 
