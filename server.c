@@ -13,38 +13,39 @@ int sockfd;
 int requestCounter;
 int requestsLeft;
 int p = 0;
+int thread_count;
 
-
-// each priority level has a row which stores the requests to be run
+// arrays to store info on each request - each column represents each priority level (1-16)
 typedef uint8_t hash_t[32];
-int priorityArray[16][300] = {0};
-uint64_t startArray[16][300] = {0};
-uint64_t endArray[16][300] = {0};
-hash_t hashArray[16][300] = {0};
+int priorityArray[16][1001] = {0};
+uint64_t startArray[16][1001] = {0};
+uint64_t endArray[16][1001] = {0};
+hash_t hashArray[16][1001] = {0};
+
+//TODO --> limit thread count to 4-6 so that 50 threads of varying priorities aren't accepted at once and treated equally by cores
 
 
-//void* reader(void *param){
 void* reader(void *arg){
     free(arg);
-    printf("%d\n",p);
     int newSockFd;
 
-    int i;
-    i = 15;     // i is the priority levels
+    int i;  // i is the priority level (-1) being looped over --> note that the loop decrements as higher priorities are addressed first
+    i = 15;
     while (i > -1) {
-        int j;
-        j = priorityArray[i][0]-1;        // j is the next spot to look at to be processed
+        int j;                      // j is the next spot to look at to be processed
+        j = priorityArray[i][0]-1;  // decrement by one as we want the last full spot (not the next availabe spot)
         while (j > 0) {
             // work on request in place priorityArray[i][priorityArray[i][0]-1]
             // Convert byte order as needed
             newSockFd = priorityArray[i][j];
+
+            // only work on request if it hasn't been worked on yet
             if(newSockFd != -20) {
                 uint64_t start = htobe64(startArray[i][j]);
                 uint64_t end = htobe64(endArray[i][j]);
                 hash_t hash;
                 memcpy(hash, hashArray[i][j], 32);
-                //hash_t hash = hashArray[i][j];
-                priorityArray[i][j] = -20;
+                priorityArray[i][j] = -20;                  // set newSockFd to -20 if response already sent back
 
                 uint8_t calculatedHash[32];
                 uint64_t key;
@@ -57,13 +58,14 @@ void* reader(void *arg){
 
                 key = be64toh(key);
 
-                write(newSockFd, &key, 8);
+                write(newSockFd, &key, 8);                  // send result back to client
                 close(newSockFd);
             }
             j = j - 1;
         }
         i = i - 1;
     }
+    thread_count = thread_count -1;
     close(newSockFd);
     pthread_exit(NULL);
 }
@@ -71,11 +73,12 @@ void* reader(void *arg){
 
 
 int main(int argc, char *argv[]) {
-// first element in each row is a count of the nest place to be filled in the array
+    thread_count = 0;
+    // the first element in each row is a count of the next place to be filled in the matrix for each given priority
     int num;
     num = 0;
     while (num <= 15) {
-    priorityArray[num][0] = 1;
+    priorityArray[num][0] = 1;  // setting each value to 1 as this will be the first available spot
     num++;
     }
 
@@ -101,10 +104,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    int NUM_CONNECTIONS;                // number of connections
-    NUM_CONNECTIONS = 50;              // set to 50 for testing purposes
-
-    listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
+    listen(sockfd, 1000);        // Listen for client --> waits for client to make connection with server
 
     // Prepare client address and size
     struct sockaddr_in cli_addr;
@@ -112,9 +112,8 @@ int main(int argc, char *argv[]) {
 
     // Accept client connections until there are none left
     while (1) {
-        // Accept connection ( will take the first in the queue)
         int newSockFd;
-        newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen); // Accept connection ( will take the first in the queue)
         requestCounter++;
 
         // check for error
@@ -139,15 +138,16 @@ int main(int argc, char *argv[]) {
         memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
         memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
 
-        int arraySpot = priorityArray[p - 1][0];               // find spot in array for this request
-        priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1; // increment count
-
+        int arraySpot = priorityArray[p - 1][0];                    // find spot in array for this request
+        priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1;      // increment count for next available spot
         memcpy(hashArray[p - 1][arraySpot], hash, 32);
-        startArray[p - 1][arraySpot] = start;
-        endArray[p - 1][arraySpot] = end;
-        priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
+        startArray[p - 1][arraySpot] = start;                       // store start value
+        endArray[p - 1][arraySpot] = end;                           // store end value
+        priorityArray[p - 1][arraySpot] = newSockFd;                // indicate there is a request with != NULL
 
-        if(p<100) {
+        // continue threads while there are still requests to be answered
+        // TODO : Check that all requests still get completed
+        if(p<1000 && thread_count <= 6) {
             p++;
             pthread_t tid;
             pthread_create(&tid, NULL, reader, NULL);
