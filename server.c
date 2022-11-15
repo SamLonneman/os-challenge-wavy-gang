@@ -92,18 +92,25 @@ void* reverseHash(void *newsockfdPtr) {
 
     // Search for key in given range corresponding to given hash
 
-    
+    struct DataItem* value = search(hash);
+
     uint8_t calculatedHash[32];
     uint64_t key;
-    for (key = start; key < end; key++) {
-        SHA256((uint8_t *)&key, 8, calculatedHash);
 
-        if (memcmp(hash, calculatedHash, 32) == 0)
-            break;
+    if (value == NULL){
+        
+        for (key = start; key < end; key++) {
+
+            SHA256((uint8_t *)&key, 8, calculatedHash);
+            if (memcmp(hash, calculatedHash, 32) == 0)
+                break;
+        }
+        // Insert the new item in the array
+        insert(key, calculatedHash);
     }
-    struct DataItem* value = search(hash);
-    // Insert the new item in the array
-    insert(key, calculatedHash);
+    else{
+        key = value->key; 
+    }
     
     for (int i = 1; i < place ; i++) {
         printf("N %d es el %d ", i, BigArray[i]->key);
@@ -121,7 +128,7 @@ void* reverseHash(void *newsockfdPtr) {
     printf("EL ULTIMO ");
     for (int h = 0; h < 32; h++){
             
-            printf("%02x", calculatedHash[h]);          
+            printf("%02x", hash[h]);          
         
     }
     printf("\n");
