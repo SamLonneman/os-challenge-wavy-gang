@@ -167,17 +167,17 @@ The results of this experiment can be found in the table below.
 
 |   Run   | Score (Solution_2) | Score (Solution_5) |
 |:-------:|:------------------:|:------------------:|
-|    1    |      8578340       |      7576153       |
-|    2    |      8728867       |      7633813       |
-|    3    |      8588195       |      7653776       |
-|    4    |      8662969       |      7785060       |
-|    5    |      8615476       |      7911605       |
-|    6    |      8679457       |      7504506       |
-|    7    |      9096115       |      7721508       |
-|    8    |      9033275       |      7998727       |
-|    9    |      8662748       |      7651104       |
-|   10    |      8705140       |      7755325       |
-| Average |      8735058       |      7719158       |
+|    1    |      4783660       |      4250265       |
+|    2    |      4723195       |      4215769       |
+|    3    |      4817164       |      4143361       |
+|    4    |      4654059       |      4176056       |
+|    5    |      4935756       |      4049407       |
+|    6    |      4677250       |      4258646       |
+|    7    |      4827054       |      4085853       |
+|    8    |      4681235       |      4151206       |
+|    9    |      4827064       |      4160764       |
+|   10    |      4727903       |      4176249       |
+| Average |      4765434       |      4166758       |
 
 ### Conclusion
 As shown by the results above, the average score of Solution_5 was lower than the average score of Solution_2. After performing a one-tailed statistical hypothesis t-test with alpha=0.05, we received a P-value of less than 0.0001%, so we can certainly reject the null hypothesis that Solution_2 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
