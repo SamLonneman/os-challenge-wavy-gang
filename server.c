@@ -26,27 +26,24 @@ void* worker_thread(void *pq) {
         // Block while queue is empty
         sem_wait(&requests_in_queue);
 
-        // Pop the request with the highest priority
+        // Extract the request with the highest priority
         pthread_mutex_lock(&lock);
-        request_t* request = extract_max(pq);
+        request_t request = extract(pq);
         pthread_mutex_unlock(&lock);
 
         // Search for key in given range corresponding to given hash
         uint8_t calculatedHash[32];
         uint64_t key;
-        for (key = request->start; key < request->end; key++) {
+        for (key = request.start; key < request.end; key++) {
             SHA256((uint8_t *)&key, 8, calculatedHash);
-            if (memcmp(request->hash, calculatedHash, 32) == 0)
+            if (memcmp(request.hash, calculatedHash, 32) == 0)
                 break;
         }
 
-        // Send resulting key back to client
+        // Send resulting key back to client and close socket
         key = be64toh(key);
-        write(request->newsockfd, &key, 8);
-
-        // Close socket and free request
-        close(request->newsockfd);
-        free(request);
+        write(request.newsockfd, &key, 8);
+        close(request.newsockfd);
     }
 }
 

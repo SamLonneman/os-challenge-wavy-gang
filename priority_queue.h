@@ -39,31 +39,33 @@ void heapify_down(priority_queue_t* pq, int i) {
     }
 }
 
-// External function to insert a request into a priority queue and dynamically resize if necessary
-void insert(priority_queue_t* pq, request_t* req) {
-    if (pq->size == pq->capacity) {
-        pq->capacity *= 2;
-        pq->arr = realloc(pq->arr, pq->capacity * sizeof(request_t));
-    }
-    pq->arr[pq->size] = *req;
-    int i = pq->size;
-    pq->size++;
-    while (i > 0 && compare_requests(&pq->arr[i], &pq->arr[(i - 1) / 2]) > 0) {
-        swap(pq, i, (i - 1) / 2);
-        i = (i - 1) / 2;
+// Internal function to heapify up a request within a priority queue
+void heapify_up(priority_queue_t* pq, int i) {
+    if (i == 0)
+        return;
+    int parent = (i - 1) / 2;
+    if (compare_requests(&pq->arr[i], &pq->arr[parent]) > 0) {
+        swap(pq, i, parent);
+        heapify_up(pq, parent);
     }
 }
 
-// External function to retrieve the highest priority request from a priority queue
-request_t* extract_max(priority_queue_t* pq) {
-    if (pq->size == 0)
-        return NULL;
-    request_t* max = malloc(sizeof(request_t));
-    *max = pq->arr[0];
-    pq->arr[0] = pq->arr[pq->size - 1];
-    pq->size--;
+// External function to insert a request into a priority queue and dynamically resize if necessary
+void insert(priority_queue_t* pq, request_t* request) {
+    if (pq->size == pq->capacity) {
+        pq->capacity *= 2;
+        pq->arr = realloc(pq->arr, sizeof(request_t) * pq->capacity);
+    }
+    pq->arr[pq->size] = *request;
+    heapify_up(pq, pq->size++);
+}
+
+// External function to retrieve and delete the highest priority request from a priority queue
+request_t extract(priority_queue_t* pq) {
+    request_t request = pq->arr[0];
+    pq->arr[0] = pq->arr[--pq->size];
     heapify_down(pq, 0);
-    return max;
+    return request;
 }
 
 #endif // OS_CHALLENGE_WAVY_GANG_PRIORITY_QUEUE_H
