@@ -23,23 +23,23 @@ The results of this experiment can be found in the table below.
 
 |   Run   | Score (Solution_0) | Score (Solution_1) |
 |:-------:|:------------------:|:------------------:|
-|    1    |      7265388       |      7289546       |
-|    2    |      7425212       |      7130323       |
-|    3    |      7383798       |      7339676       |
-|    4    |      7254606       |      7337064       |
-|    5    |      7077907       |      7014741       |
-|    6    |      7214552       |      6987736       |
-|    7    |      7174563       |      7351505       |
-|    8    |      7319923       |      7571753       |
-|    9    |      6948300       |      7588138       |
-|   10    |      7608815       |      6925995       |
-| Average |      7267306       |      7253648       |
+|    1    |      7021784       |      7069874       |
+|    2    |      7144965       |      7147021       |
+|    3    |      7039684       |      6867306       |
+|    4    |      6956718       |      7078444       |
+|    5    |      6913224       |      6951947       |
+|    6    |      7096031       |      6994614       |
+|    7    |      6835940       |      6941992       |
+|    8    |      7026563       |      7120237       |
+|    9    |      6934364       |      6875972       |
+|   10    |      6900494       |      6939558       |
+| Average |      6986977       |      6998697       |
 
 ### Conclusion
-The results of our experiment above show that on average Solution_1 scored slightly lower than Solution_0. However, after performing a one-tailed statistical hypothesis t-test with alpha=0.05, we received a P-value of 0.44, so we fail to reject the null hypothesis that Solution_1 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment. Therefore, the difference in average score of our samples is not statistically significant enough to suggest that there is any true difference in performance.
+The results of our experiment above show that on average Solution_1 scored very similarly to Solution_0. Furthermore, after performing a one-tailed statistical hypothesis t-test with alpha=0.05, we received a P-value of 0.7912, so we fail to reject the null hypothesis that Solution_1 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment. Therefore, the difference in average score of our samples is not statistically significant enough to suggest that there is any true difference in performance.
 
 ### Discussion
-The conclusion provides evidence that simply replacing a multiprocess approach with a multithreaded approach does not significantly improve performance. This conclusion makes sense when we remember that we only expected a performance improvement by reducing the overhead of creating new processes. This is a very small difference, and more importantly, this very small improvement only occurs once per request (maybe just a few hundred times depending on the client run configuration). It seems likely that this improvement might only become significant with an arbitrarily large number of requests (far more than could realistically be tested). Furthermore, even though the results were insufficient for rejecting our null hypothesis, the experiment was still very important to our project because it laid the foundation for future experiments which are based on multithreading.
+The conclusion provides evidence that simply replacing a multiprocess approach with a multithreaded approach does not significantly improve performance. This conclusion makes sense when we remember that we only expected a performance improvement by reducing the overhead of creating new processes. This is a very small difference, and more importantly, this very small improvement only occurs once per request (maybe just a thousand times depending on the client run configuration). It seems likely that if there is some improvement as described in the rationale, it would require an impractically large number of requests to find a measurable improvement. Furthermore, even though the results were insufficient for rejecting our null hypothesis, the experiment was still very important to our project because it laid the foundation for future experiments which will be based on multithreading.
 
 ### Improvements
 In the future, it would be helpful for such an experiment to have an automated script to run the client several times and automatically collect the results into a usable format instead of manually kicking off each run and recording the score. This would allow us to more practically increase our sample size and thus increase the statistical significance of our results. Also, both solutions currently allow for an unchecked number of threads/processes to run pseudo-concurrently, meaning a non-negligible amount of time is devoted to switching between them. Perhaps a solution could be devised which reduces the amount of time spent switching between threads/processes.
