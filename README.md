@@ -1,6 +1,21 @@
 # 02159 Operating Systems Challenge
 ### Wavy Gang - Sam Lonneman, Alana Vanzo, & Pedro Wachtendorff
 
+## General Information
+### Contributions
+**Sam Lonneman** (s216999) - Experiments 1, 2, 3, & 5.
+
+**Alana Vanzo** (s221952) - Experiments ____.
+
+**Pedro Wachtendorff** (s221411) - Experiments ____.
+
+### Final Solution
+The code on this branch makes up our final solution. At the moment, it is an exact copy of the code found in the branch [`Experiment_5`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_1) because this was our best performing experiment so far, and it utilizes some concepts built up from previous experiments. First, this solution is multithreaded rather than multiprocess, a change first made during Experiment 1. Second, it is optimized for a 4 core system, a change first made during Experiment 2. Finally, it utilizes a max heap based request priority queue for handling the order of requests to process, a change first made during Experiment 5. For more detailed information on the rationale and effects of these changes, you can find all the experiment reports below, or individually on each experiment's branch.
+
+### Benchmarking
+Many of the experiments below make reference to a client run configuration called [`test.sh`](https://github.com/SamLonneman/os-challenge-wavy-gang/blob/master/test.sh), which can be found here in the root directory. This is the configuration used throughout many of the below experiments to gather scores for our new solutions and the benchmarks. It is nearly identical to the provided configuration [`run-client-milestone.sh`](https://github.com/dtu-ese/os-challenge-common/blob/master/run-client-milestone.sh), except that the difficulty and delay have each been decreased by a factor of 10. This configuration allowed us to perform many more meaningful tests within a reasonable amount of time.
+
+
 ## Experiment 1: Multithreading
 
 ### Background
