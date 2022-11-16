@@ -1,7 +1,7 @@
 # 02159 Operating Systems Challenge
 ### Wavy Gang - Sam Lonneman, Alana Vanzo, & Pedro Wachtendorff
 
-## Experiment 2: Optimization for Multi-Core Processor
+## Experiment 2: Optimization for Multi-Core Processor - Sam Lonneman (s216999)
 
 ### Background
 The goal of this experiment is to take advantage of the fact that our server will be run on a machine with a multi-core processor. Furthermore, we will devise a solution which is optimized for 4 cores since this is the specification of the machine used to benchmark our server. We refer to this solution as Solution_2, and it's code can be found on a branch called [`Experiment_2`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_2). Our first working implementation will serve as the control for this experiment. We refer to this control solution as Solution_0, and it's code can be found on a branch called [`milestone`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/milestone).
@@ -16,7 +16,7 @@ Solution_0 works such that a single process continuously awaits requests from th
 The independent variable in this experiment is whether the solution is optimized for a 4 core system (Solution_0 vs Solution_2). The dependent variable will be the score returned from the client after running a test suite. To ensure that other variables are consistent, we will perform every test using the same run configuration with the same randomization seed on the same virtual machine running on the same computer.
 
 ### Method
-For both implementations of the server, we will run `test.sh` 10 times and take the average of the scores. We will then compare the average scores of each implementation to determine which implementation runs faster. Finally, we will perform a hypothesis test with alpha=0.05 to determine whether the difference in scores is statistically significant given our sample size.
+For both implementations of the server, we will run [`test.sh`](https://github.com/SamLonneman/os-challenge-wavy-gang/blob/master/test.sh) on the client 10 times and take the average of the scores. We will then compare the average scores of each implementation to determine which implementation runs faster. Finally, we will perform a hypothesis test with alpha=0.05 to determine whether the difference in scores is statistically significant given our sample size.
 
 ### Results
 The results of this experiment can be found in the table below.
@@ -36,7 +36,7 @@ The results of this experiment can be found in the table below.
 | Average |      7331031       |      5424667       |
 
 ### Conclusion
-As shown by the results above, the average score of Solution_2 was lower than the average score of Solution_0. After performing a statistical hypothesis test with alpha=0.05, we received a P-value of less than 0.0001%, so we can certainly reject the null hypothesis that Solution_2 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
+As shown by the results above, the average score of Solution_2 was lower than the average score of Solution_0. After performing a one-tailed statistical hypothesis t-test with alpha=0.05, we received a P-value of less than 0.0001%, so we can certainly reject the null hypothesis that Solution_2 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
 
 ### Discussion
 The conclusion provides evidence that limiting the number of processes to the number of cores is statistically significantly faster than creating a new process for each request. This result makes sense and supports our hypothesis for the reason explained in our rationale.
