@@ -1,7 +1,7 @@
 # 02159 Operating Systems Challenge
 ### Wavy Gang - Sam Lonneman, Alana Vanzo, & Pedro Wachtendorff
 
-## Experiment 1: Multithreading
+## Experiment 1: Multithreading - Sam Lonneman (s216999)
 
 ### Background
 The goal of this experiment is to determine whether multithreading is faster than using separate processes for each request. We refer to the new multithreaded solution as Solution_1, and its code can be found on a branch called [`Experiment_1`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_1). Our first working implementation is a multiprocess solution, and it will serve as the control for this experiment. We refer to this control solution as Solution_0, and it's code can be found on a branch called [`milestone`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/milestone).
@@ -16,7 +16,7 @@ Solution_0 has one process which constantly accepts incoming requests and forks 
 The independent variable in this experiment is whether new threads are created for each request (Solution_1) or new processes are forked for each request (Solution_0). The dependent variable will be the score returned from the client after running a test suite. To ensure that other variables are consistent, we will perform every test using the same run configuration with the same randomization seed on the same virtual machine running on the same computer.
 
 ### Method
-For both implementations of the server, we will run `test.sh` 10 times and take the average of the scores. We will then compare the average scores of each implementation to determine which implementation runs faster. Finally, we will perform a hypothesis test with alpha=0.05 to determine whether the difference in scores is statistically significant given our sample size.
+For both implementations of the server, we will run [`test.sh`](https://github.com/SamLonneman/os-challenge-wavy-gang/blob/master/test.sh) on the client 10 times and take the average of the scores. We will then compare the average scores of each implementation to determine which implementation runs faster. Finally, we will perform a hypothesis test with alpha=0.05 to determine whether the difference in scores is statistically significant given our sample size.
 
 ### Results
 The results of this experiment can be found in the table below.
@@ -36,7 +36,7 @@ The results of this experiment can be found in the table below.
 | Average |      7267306       |      7253648       |
 
 ### Conclusion
-The results of our experiment above show that on average Solution_1 scored slightly lower than Solution_0. However, after performing a statistical hypothesis test with alpha=0.05, we received a P-value of 0.44, so we fail to reject the null hypothesis that Solution_1 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
+The results of our experiment above show that on average Solution_1 scored slightly lower than Solution_0. However, after performing a one-tailed statistical hypothesis t-test with alpha=0.05, we received a P-value of 0.44, so we fail to reject the null hypothesis that Solution_1 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment. Therefore, the difference in average score of our samples is not statistically significant enough to suggest that there is any true difference in performance.
 
 ### Discussion
 The conclusion provides evidence that simply replacing a multiprocess approach with a multithreaded approach does not significantly improve performance. This conclusion makes sense when we remember that we only expected a performance improvement by reducing the overhead of creating new processes. This is a very small difference, and more importantly, this very small improvement only occurs once per request (maybe just a few hundred times depending on the client run configuration). It seems likely that this improvement might only become significant with an arbitrarily large number of requests (far more than could realistically be tested). Furthermore, even though the results were insufficient for rejecting our null hypothesis, the experiment was still very important to our project because it laid the foundation for future experiments which are based on multithreading.
