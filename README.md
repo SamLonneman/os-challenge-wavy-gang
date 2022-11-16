@@ -145,7 +145,7 @@ As shown by the results above, the average score of Solution_3 was lower than th
 The conclusion provides evidence that priority scheduling with "nice values" is statistically significantly faster than ignoring priority. This result makes sense. After all, the same number of processes is created in the same order as before. The only difference is that the scheduler now selects higher priority requests more often than lower priority requests, improving performance without any significant downside. Note that this method is only useful in situations where there are more processes than available cores, a situation which may already be undesirable due to the increased time spent switching between processes. So, it seems likely that other solutions will be better for our final implementation.
 
 
-## Experiment 5: Request Priority Queue
+## Experiment 5: Request Priority Queue - Sam Lonneman (s216999)
 
 ### Background
 The goal of this experiment is to optimize the server such that requests are processed in order of priority using a request priority queue (implemented as a custom max heap data structure). This solution is built off of Solution_1, our first naive multithreaded solution. This new solution takes it a step further, limiting the number of worker threads to the number of cores to reduce excess switching. Thus, it can also be said to draw inspiration from Solution_2, where we implemented this same concept with processes. We refer to this new solution as Solution_5, and it's code can be found on a branch called [Experiment_5](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_5). Since we expect this new solution to be a direct improvement to Solution_2, we will use Solution_2 as the baseline for this experiment. The code for Solution_2 can be found on a branch called [Experiment 2](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_2).
@@ -160,7 +160,7 @@ Solution_2 works such that each time one of the four worker processes finishes p
 The independent variable in this experiment is whether the solution is optimized with a request priority queue or not (Solution_5 vs Solution_2). The dependent variable will be the score returned from the client after running a test suite. To ensure that other variables are consistent, we will perform every test using the same run configuration with the same randomization seed on the same virtual machine running on the same computer.
 
 ### Method
-For both implementations of the server, we will run test.sh 10 times and take the average of the scores. We will then compare the average scores of each implementation to determine which implementation runs faster. Finally, we will perform a hypothesis test with alpha=0.05 to determine whether the difference in scores is statistically significant given our sample size.
+For both implementations of the server, we will run [`test.sh`](https://github.com/SamLonneman/os-challenge-wavy-gang/blob/master/test.sh) on the client 10 times and take the average of the scores. We will then compare the average scores of each implementation to determine which implementation runs faster. Finally, we will perform a hypothesis test with alpha=0.05 to determine whether the difference in scores is statistically significant given our sample size.
 
 ### Results
 The results of this experiment can be found in the table below.
@@ -180,7 +180,7 @@ The results of this experiment can be found in the table below.
 | Average |      8735058       |      7719158       |
 
 ### Conclusion
-As shown by the results above, the average score of Solution_5 was lower than the average score of Solution_2. After performing a statistical hypothesis test with alpha=0.05, we received a P-value of less than 0.0001%, so we can certainly reject the null hypothesis that Solution_2 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
+As shown by the results above, the average score of Solution_5 was lower than the average score of Solution_2. After performing a one-tailed statistical hypothesis t-test with alpha=0.05, we received a P-value of less than 0.0001%, so we can certainly reject the null hypothesis that Solution_2 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
 
 ### Discussion
 The conclusion provides evidence that using a max heap priority queue to process the highest priority requests first yields statistically significantly better performance than a solution which processes requests in a FIFO manner indifferent to priority. This result makes sense and supports our hypothesis for the reason explained in our rationale.
