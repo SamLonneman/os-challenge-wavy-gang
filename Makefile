@@ -1,4 +1,4 @@
-default: server.c messages.h
+default:
 	gcc -o server server.c -lcrypto -pthread
 
 clean:
