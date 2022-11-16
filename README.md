@@ -41,5 +41,7 @@ As shown by the results above, the average score of Solution_5 was lower than th
 ### Discussion
 The conclusion provides evidence that using a max heap priority queue to process the highest priority requests first yields statistically significantly better performance than a solution which processes requests in a FIFO manner indifferent to priority. This result makes sense and supports our hypothesis for the reason explained in our rationale.
 
+Also note, ideally we would take advantage of a max heap's constant O(1) time complexity for peeking at the top without deletion. However, it is essential that the request is fully deleted from the heap before any request begins processing it to ensure that two requests won't be assigned to the same job, which would hurt our reliability. So, it is in our best interest to use an extraction method which retrieves and deletes all at once, which unfortunately requires at least O(log n) time. Regardless, O(log n) retrieval time is still very fast especially considering that n only grows to around 1000 at most, within reasonable conditions like those in the final submission run.
+
 ### Improvements
 While this solution provides more improvements and is our best implementation so far, it still pays no attention to repeated requests. Perhaps this could still be improved by implementing some kind of cache shared between the worker threads.
