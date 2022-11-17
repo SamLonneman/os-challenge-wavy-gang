@@ -10,9 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "messages.h"
-#include "cache.h"
-#include "priority_queue.h"
+#include "helpers/messages.h"
+#include "helpers/cache.h"
+#include "helpers/priority_queue.h"
 
 // Declare semaphore and mutex for preventing race conditions
 sem_t requests_in_queue;
