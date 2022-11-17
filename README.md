@@ -1,19 +1,19 @@
 # 02159 Operating Systems Challenge
 ### Wavy Gang - Sam Lonneman, Alana Vanzo, & Pedro Wachtendorff
 
-## Experiment 1: Multithreading
+## Experiment 4: Caché
 
 ### Background
-The goal of this experiment is to determine whether multithreading is faster than using separate processes for each request. We refer to the new multithreaded solution as Solution_1, and its code can be found on a branch called [`Experiment_1`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_1). Our first working implementation is a multiprocess solution, and it will serve as the control for this experiment. We refer to this control solution as Solution_0, and it's code can be found on a branch called [`milestone`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/milestone).
+The goal of this experiment is to determine whether using a caché is faster than not using one. We refer to the new solution as Solution_4, and its code can be found on a branch called [`Experiment_4_v3`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_4_v3). Our second working implementation is a multithreading solution, and it will serve as the control for this experiment. We refer to this control solution as Solution_1, and it's code can be found on a branch called [`milestone`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_1).
 
 ### Hypothesis
-We hypothesize that Solution_1 will run faster (score lower) than Solution_0 in the test environment. Furthermore, the null hypothesis for this experiment is that Solution_1 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
+We hypothesize that Solution_4 will run faster (score lower) than Solution_1 in the test environment. Furthermore, the null hypothesis for this experiment is that Solution_4 will run slower than or equal to (score higher than or equal to) Solution_1 in the test environment.
 
 ### Rationale
-Solution_0 has one process which constantly accepts incoming requests and forks off new processes to immediately begin handling each one. Solution_1 has one thread which constantly accepts incoming requests and starts new threads to immediately begin handling each one. We hypothesize that Solution_1 will run faster than Solution_0 simply due to assumption that creating a new thread is computationally faster than starting a new process because less memory needs to be copied since threads share a process's memory while forked processes require the entire process to be copied.
+Solution_1 has one thread which constantly accepts incoming requests and starts new thread to immediately begin handling each one. Solution_4 works with the same idea, but previously handling each request it asked to a caché for known values that were already proccessed before. We hypothesize that Solution_4 will run faster than Solution_1 simply due to assumption that accesing to known values in a conveniently restricted memory store is considerably faster than processing the same repeated value. Therefore, this will be better in the entire request process.
 
 ### Variables
-The independent variable in this experiment is whether new threads are created for each request (Solution_1) or new processes are forked for each request (Solution_0). The dependent variable will be the score returned from the client after running a test suite. To ensure that other variables are consistent, we will perform every test using the same run configuration with the same randomization seed on the same virtual machine running on the same computer.
+The independent variable in this experiment is whether the solution is optimized including a cache or not (Solution_4 vs Solution_1). The dependent variable will be the score returned from the client after running a test suite. To ensure that other variables are consistent, we will perform every test using the same run configuration with the same randomization seed on the same virtual machine running on the same computer.
 
 ### Method
 For both implementations of the server, we will run `test.sh` 10 times and take the average of the scores. We will then compare the average scores of each implementation to determine which implementation runs faster. Finally, we will perform a hypothesis test with alpha=0.05 to determine whether the difference in scores is statistically significant given our sample size.
@@ -23,17 +23,17 @@ The results of this experiment can be found in the table below.
 
 |   Run   | Score (Solution_0) | Score (Solution_1) |
 |:-------:|:------------------:|:------------------:|
-|    1    |      7265388       |      7289546       |
-|    2    |      7425212       |      7130323       |
-|    3    |      7383798       |      7339676       |
-|    4    |      7254606       |      7337064       |
-|    5    |      7077907       |      7014741       |
-|    6    |      7214552       |      6987736       |
-|    7    |      7174563       |      7351505       |
-|    8    |      7319923       |      7571753       |
-|    9    |      6948300       |      7588138       |
-|   10    |      7608815       |      6925995       |
-| Average |      7267306       |      7253648       |
+|    1    |      3980713       |      2752393       |
+|    2    |      3625083       |      3474491       |
+|    3    |      3595248       |      2909007       |
+|    4    |      3492727       |      2316086       |
+|    5    |      3924176       |      3704961       |
+|    6    |      3943407       |      3371207       |
+|    7    |      3489506       |      3392503       |
+|    8    |      3715929       |      2684450       |
+|    9    |      3545475       |      2086809       |
+|   10    |      3862122       |      2058934       |
+| Average |      3717439       |      2875084       |
 
 ### Conclusion
 The results of our experiment above show that on average Solution_1 scored slightly lower than Solution_0. However, after performing a statistical hypothesis test with alpha=0.05, we received a P-value of 0.44, so we fail to reject the null hypothesis that Solution_1 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.

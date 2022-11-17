@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include "messages.h"
 
-#define SIZE 100
+#define SIZE 3000
 
 // Array inspired in https://www.tutorialspoint.com/data_structures_algorithms/hash_table_program_in_c.htm
 
