@@ -51,12 +51,11 @@ void insert(uint64_t key, uint8_t* data) {
 }
 
 struct DataItem *search(uint8_t* data) {
-    printf("Entra \n");
     //move in array
     for (int index = 1; index < place; index++) {
         // If find a match return the value    
         if (memcmp(BigArray[index]->data, data, 32) == 0){
-            printf("LO ENCONTRO \n");
+            
             return BigArray[index];
         }
     }
@@ -112,26 +111,7 @@ void* reverseHash(void *newsockfdPtr) {
         key = value->key; 
     }
     
-    for (int i = 1; i < place ; i++) {
-        printf("N %d es el %d ", i, BigArray[i]->key);
-
-        for (int g = 0; g < 32; g++){
-            printf("%02x", BigArray[i]->data[g]);
-            
-
-            
-        
-        }
-        printf("\n");
-       
-    }
-    printf("EL ULTIMO ");
-    for (int h = 0; h < 32; h++){
-            
-            printf("%02x", hash[h]);          
-        
-    }
-    printf("\n");
+   
 
     // Send resulting key back to client
     key = be64toh(key);
