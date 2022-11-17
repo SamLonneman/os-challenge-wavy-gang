@@ -70,7 +70,8 @@ void* reader(void *arg){
     pthread_exit(NULL);
 }
 
-
+fork()
+fork()
 
 int main(int argc, char *argv[]) {
     thread_count = 0;
