@@ -22,8 +22,6 @@ uint64_t startArray[16][1001] = {0};
 uint64_t endArray[16][1001] = {0};
 hash_t hashArray[16][1001] = {0};
 
-//TODO --> limit thread count to 4-6 so that 50 threads of varying priorities aren't accepted at once and treated equally by cores
-
 
 void* reader(void *arg){
     free(arg);
@@ -145,8 +143,7 @@ int main(int argc, char *argv[]) {
         priorityArray[p - 1][arraySpot] = newSockFd;                // indicate there is a request with != NULL
 
         // continue threads while there are still requests to be answered
-        // TODO : Check that all requests still get completed and adjust to 1000 requests
-        if(p<100 && thread_count <= 6) {
+        if(p<1000 && thread_count <= 6) {
             p++;
             pthread_t tid;
             pthread_create(&tid, NULL, reader, NULL);

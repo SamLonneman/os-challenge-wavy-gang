@@ -21,8 +21,7 @@ to loop over requests is made up for in higher priorities being handled more qui
 ### Variables 
 Independent Variable: Introduction of priority arrays
 Controlled Variable: Multithreading - consistent with experiment 1
-Dependent Variable: Performance score 
-
+Dependent Variable: Performance score
 
 
 ### Method 
@@ -31,29 +30,63 @@ compare the average scores of each implementation to determine which implementat
 a hypothesis test with alpha=0.05 to determine whether the difference in scores is statistically significant given our sample size.
 
 
+### Run Configuration 
+SERVER=192.168.101.10
+\
+PORT=5003
+\
+SEED=3435245
+\
+TOTAL=100
+\
+START=1
+\
+DIFFICULTY=300000
+\
+REP_PROB_PERCENT=20
+\
+DELAY_US=10
+\
+PRIO_LAMBDA=0.2
+
+Note that a different client run configuration has been used as to test the priorities in an enviornment
+where most priorities are obtained. As storing the values of each request takes time, theoretically if all requests were to
+have the same priority then there is no point in taking the time to store values and order. All tests in the results
+table have been run under the same client run configuration for consistency.
+
+
+
 ### Results
-The results of this experiment can be found in the table below.
+|   Run   | Experiment 6.1 |  Experiment 6.3  | Experiment 1 (multithreading) | Milestone (4 Processes) |
+|:-------:|:--------------:|:----------------:|:-----------------------------:|:-----------------------------:|
+|    1    |    20531239    |     13981242     |           13059565            |       12125862            |
+|    2    |    24377169    |     11725117     |           13776204            |       13490430            |
+|    3    |    25979897    |     12993175     |           13418582            |       13636356            |
+|    4    |    26949927    |     12156278     |           14793607            |       13897344            |
+|    5    |    26348427    |     13715916     |           13273441            |       14376678            |
+|    6    |    26309607    |     13395847     |           13675835            |       13279553            |
+|    7    |    26522276    |     13546126     |           14633293            |       14786374            |
+|    8    |    27009276    |     12068886     |           13387746            |       13800504            |
+|    9    |    27395650    |     13875488     |           13774564            |       13497668            |
+|   10    |    25919462    |     13080453     |           13895749            |       14355790            |
+| Average |    25734293    |    13053852.8    |          13768858.6           |       13771271            |
 
-|   Run   | Score (Solution_6.3) |      Score (Solution_1)       |
-|:-------:|:--------------------:|:-----------------------------:|
-|    1    |       11773654       |           22082119            |
-|    2    |       11477175       |           21938293            |
-|    3    |       11635787       |           12133698            |
-|    4    |       32359716       |           11322790            |
-|    5    |       21773045       |           11731503            |
-|    6    |       21886657       |           11658533            |
-|    7    |       21582834       |           11503608            |
-|    8    |       21488221       |           12456861            |
-|    9    |       21113560       |           11387776            |
-|   10    |       21166621       |           11741256            |
-| Average |          X           |               X               |
+### Conclusion
+#### Experiment 6.1 VS Experiment 6.3
+The two-tailed P value is less than 0.0001
+t = 18.5448
 
+#### Experiment 6.3 VS Experiment 1
+The two-tailed P value equals 0.0338
+t = 2.2974
 
-### Conclusion 
-
-
-### Discussion 
+### Discussion
+As expected the performance of experiment 
 
 
 ### Improvement 
 This experiment disregards repetition of requests, therefore a truly optimised server will also consider this. 
+Furthermore, there is still the restriction that low priority requests loaded in early have to wait a long time for higher priority
+requests to be loaded and sent back before being worked on. This could potentially be resolved by setting up 
+an interrupt system where requests are put to the top of the priority lists if they have been waiting for too long 
+after being loaded in. 
