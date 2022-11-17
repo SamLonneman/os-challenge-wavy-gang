@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include "messages.h"
 
+
+// These variables are global so that they can be accessed by the termination handler
 int sockfd;
 int newSockFd;
 int requestCounter;
@@ -27,39 +29,18 @@ void terminationHandler(int sig) {
     exit(0);
 }
 
-// function to read from client
-// param is the reference to the new socket fd --> &newSockFd
-
-
-
-
 int main(int argc, char *argv[]) {
 // first element in each row is a count of the nest place to be filled in the array
-    priorityArray[0][0] = 1;
-    priorityArray[1][0] = 1;
-    priorityArray[2][0] = 1;
-    priorityArray[3][0] = 1;
-    priorityArray[4][0] = 1;
-    priorityArray[5][0] = 1;
-    priorityArray[6][0] = 1;
-    priorityArray[7][0] = 1;
-    priorityArray[8][0] = 1;
-    priorityArray[9][0] = 1;
-    priorityArray[10][0] = 1;
-    priorityArray[11][0] = 1;
-    priorityArray[12][0] = 1;
-    priorityArray[13][0] = 1;
-    priorityArray[14][0] = 1;
-    priorityArray[15][0] = 1;
+    int num;
+    num = 0;
+    while (num <= 15) {
+        priorityArray[num][0] = 1;  // setting each value to 1 as this will be the first available spot
+        num++;
+    }
 
     requestCounter = 0;
 
-
-
-
-    // Set up signal for graceful termination
-    signal(SIGINT, terminationHandler);
-
+    signal(SIGINT, terminationHandler);                 // Set up signal for graceful termination
     sockfd = socket(AF_INET, SOCK_STREAM, 0);           // Create socket --> holds the return of the socket function
 
     // Set the port as available in case it is not available, and check for error
@@ -131,8 +112,7 @@ int main(int argc, char *argv[]) {
         endArray[p - 1][arraySpot] = end;
         priorityArray[p - 1][arraySpot] = newSockFd;                   // indicate there is a request with != NULL
 
-        // TODO: Change this to 250 for submission
-        if (requestCounter == 25) {
+        if (requestCounter == 250) {
             //goto priorityLoop;
             int p;      // p is the number of requests left to process
             p = 0;
@@ -169,7 +149,6 @@ int main(int argc, char *argv[]) {
                 }
                 i = i - 1;
             }
-            printf("We are now exiting the server");
         }
     }
     return 0;

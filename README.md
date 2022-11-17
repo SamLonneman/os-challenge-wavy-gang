@@ -70,8 +70,16 @@ t = 18.5448
 The two-tailed P value equals 0.0338
 t = 2.2974
 
-### Discussion and Improvements 
+### Discussion
 As suspected the results from experiment 1 are much worse than other experiments. The evident weakness in this experiment resides in the delay between receiving the first priority and sending requests back,
 as the processes will not send a request back until all requests have been received and ordered. Therefore, while the time taken 
 for the whole program to run will be very similar to a four process system without priority ordering, the time delay will be very high
 for low priority requests received early on as they will then be processed last. 
+
+### Improvements
+This server could be improved by beginning having one process in charge of scheduling while other 
+processes or threads begin sending back requests simultaneously. This would ensure that all requests do not need to wait for
+every request to be loaded before beginning process time. Furthermore, as the server is currently set up it needs to be manually adjusted based on 
+how many requests will be sent through - this is not ideal for situations where the client will be 
+sending through an unknown number of requests. Experiment 6.3 utilizes different implementation so that it is not 
+restricted in both of these ways. 
