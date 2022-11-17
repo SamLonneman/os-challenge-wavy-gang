@@ -146,8 +146,8 @@ int main(int argc, char *argv[]) {
         priorityArray[p - 1][arraySpot] = newSockFd;                // indicate there is a request with != NULL
 
         // continue threads while there are still requests to be answered
-        // TODO : Check that all requests still get completed
-        if(p<1000 && thread_count <= 6) {
+        // TODO : Check that all requests still get completed and adjust to 1000 requests
+        if(p<100 && thread_count <= 6) {
             p++;
             pthread_t tid;
             pthread_create(&tid, NULL, reader, NULL);
