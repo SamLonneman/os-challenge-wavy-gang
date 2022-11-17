@@ -70,8 +70,6 @@ void* reader(void *arg){
     pthread_exit(NULL);
 }
 
-fork();
-fork();
 
 int main(int argc, char *argv[]) {
     thread_count = 0;
@@ -148,8 +146,7 @@ int main(int argc, char *argv[]) {
 
         // continue threads while there are still requests to be answered
         // TODO : Check that all requests still get completed and adjust to 1000 requests
-        //if(p<100 && thread_count <= 6) {
-        if(p<100) {
+        if(p<100 && thread_count <= 6) {
             p++;
             pthread_t tid;
             pthread_create(&tid, NULL, reader, NULL);
