@@ -1,11 +1,9 @@
 // NOTE: We used some socket logic from https://www.tutorialspoint.com/unix_sockets/index.htm
 
-#include <netdb.h>
 #include <netinet/in.h>
 #include <openssl/sha.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
