@@ -9,6 +9,8 @@
 ### Background
 Experiment 6.1 was conducted first, as Experiment 6.3 worked to incorporate the priority queue more 
 naturally such that it didn't take away from the rest of the components (average wait time, etc.).
+The code for Experiment 6.1's server can be found on the branch "Experiment_6.1" and the code for Experiment 6.3's
+server can be found on the branch "Experiment_6.3"
 
 #### Experiment 6.3
 This experiment stems off of experiment 1 where multithreading is introduced, with 
