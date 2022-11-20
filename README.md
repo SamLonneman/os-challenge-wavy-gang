@@ -12,7 +12,7 @@ The code on this branch ([`master`](https://github.com/SamLonneman/os-challenge-
 ### Individual Experiment Contributions
 **Sam Lonneman** (s216999) - Experiments 1, 2, 3, & 5.
 
-**Alana Vanzo** (s221952) - Experiments ____.
+**Alana Vanzo** (s221952) - Experiments 6.1 & 6.3 --> combined into experiment 6.
 
 **Pedro Wachtendorff** (s221411) - Experiments ____.
 
@@ -194,10 +194,8 @@ The conclusion provides evidence that using a max heap priority queue to process
 While this solution provides more improvements and is our best implementation so far, it still pays no attention to repeated requests. To create this improvement, our final solution combines this solution with the caching system from the previous experiment.
 
 
-## Experiment 6: Request Priority Queue - Alana Vanzo (s221952)
+## Experiment 6: Manual Request Priority Queue - Alana Vanzo (s221952)
 
-
-## Experiment 6: Manual Priority Queue
 ### Experiment 6.3: Manual Priority Queue with Multithreading 
 ### Experiment 6.1: Manual Priority Queue with 4 Processes (priority over all other factors)
 
