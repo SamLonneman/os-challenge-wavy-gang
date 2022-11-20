@@ -192,3 +192,6 @@ The conclusion provides evidence that using a max heap priority queue to process
 
 ### Improvements
 While this solution provides more improvements and is our best implementation so far, it still pays no attention to repeated requests. To create this improvement, our final solution combines this solution with the caching system from the previous experiment.
+
+
+## Experiment 6: Request Priority Queue - Alana Vanzo (s221952)
