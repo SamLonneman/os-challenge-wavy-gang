@@ -16,7 +16,7 @@
 sem_t requests_in_queue;
 pthread_mutex_t lock;
 
-// Define shared cache and shared request priority queue
+// Declare shared cache and shared request priority queue
 cache_t cache;
 priority_queue_t pq;
 
@@ -31,7 +31,7 @@ void* worker_thread() {
         request_t request = extract(&pq);
         pthread_mutex_unlock(&lock);
 
-        // Reverse hash to find the key which produced the given hash
+        // Reverse hash by brute force to find the key which produced the given hash
         uint8_t calculatedHash[32];
         uint64_t key;
         for (key = request.start; key < request.end; key++) {
