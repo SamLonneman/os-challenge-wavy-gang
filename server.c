@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
             p = 0;
             int i;
             i = 15;     // i is the priority levels
-            while (i > -1 && p <= 100) {
+            while (i > -1 && p <= 1000) {
                 int j;
                 j = priorityArray[i][0]-1;        // j is the next spot to look at to be processed
                 while (j > 0) {
