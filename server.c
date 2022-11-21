@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
                     }
 
                     key = be64toh(key);
-
+                    printf("Request %d", p);
                     write(newSockFd, &key, 8);
                     close(newSockFd);
                     j = j - 1;
