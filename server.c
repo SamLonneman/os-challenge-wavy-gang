@@ -58,14 +58,8 @@ void* reader(void *arg){
 
                 write(newSockFd, &key, 8);                  // send result back to client
                 close(newSockFd);
-                j = -20;
-                i = -20;
-                thread_count = thread_count -1;
-                pthread_exit(NULL);
-                break;
-            }else {
-                j = j - 1;
             }
+            j = j - 1;
         }
         i = i - 1;
     }
@@ -151,15 +145,10 @@ int main(int argc, char *argv[]) {
 
 
         // continue threads while there are still requests to be answered
-        while(p < 1000) {
             if (thread_count <= 6) {
                 p++;
                 pthread_t tid;
                 pthread_create(&tid, NULL, reader, NULL);
             }
-        }
-
-
-
     }
 }
