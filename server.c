@@ -60,9 +60,6 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;
     int clilen = sizeof(cli_addr);
 
-    // Declare a request counter
-    int requestCounter = 0;
-
     // Begin accepting client connections as concurrent child processes
     while (1) {
 
@@ -80,17 +77,11 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
-        // Increment Request Counter
-        ++requestCounter;
-
         // Child: process a request and return a result
         if (pid == 0) {
 
             // Close the original socket on this process
             close(sockfd);
-
-            // Print request received message
-            printf("[%d] Request received.\n", requestCounter);
 
             // Read in request through new socket
             char buffer[PACKET_REQUEST_SIZE];
@@ -113,9 +104,6 @@ int main(int argc, char *argv[]) {
             start = htobe64(start);
             end = htobe64(end);
 
-            // Debugging print with start and end
-            // printf("Start: %llu\nEnd: %llu\n", start, end);
-
             // Search for key in given range corresponding to given hash
             uint8_t calculatedHash[32];
             uint64_t key;
@@ -133,9 +121,6 @@ int main(int argc, char *argv[]) {
             // Send resulting key back to client
             key = be64toh(key);
             write(newsockfd, &key, 8);
-
-            // Print response sent message
-            printf("[%d] Response Sent.\n", requestCounter);
 
             // Clean up and exit the child process
             close(newsockfd);
