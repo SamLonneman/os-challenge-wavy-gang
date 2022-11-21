@@ -149,11 +149,17 @@ int main(int argc, char *argv[]) {
             endArray[p - 1][arraySpot] = end;                           // store end value
             priorityArray[p - 1][arraySpot] = newSockFd;                // indicate there is a request with != NULL
 
+
         // continue threads while there are still requests to be answered
-        if(thread_count <= 6) {
-            p++;
-            pthread_t tid;
-            pthread_create(&tid, NULL, reader, NULL);
+        while(p < 1000) {
+            if (thread_count <= 6) {
+                p++;
+                pthread_t tid;
+                pthread_create(&tid, NULL, reader, NULL);
+            }
         }
+
+
+
     }
 }
