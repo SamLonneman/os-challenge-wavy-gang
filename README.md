@@ -16,7 +16,7 @@ A short summary of our final solution is as follows: one thread continuously acc
 
 **Alana Vanzo** (s221952) - Experiments 6.1 & 6.3 --> combined into experiment 6.
 
-**Pedro Wachtendorff** (s221411) - Experiments ____.
+**Pedro Wachtendorff** (s221411) - Experiment 4. 
 
 ### Benchmarking
 Many of the experiments below make reference to a client run configuration called [`test.sh`](https://github.com/SamLonneman/os-challenge-wavy-gang/blob/master/test.sh), which can be found here in the root directory. This is the configuration used throughout many of the below experiments to gather scores for our new solutions and the benchmarks. It is nearly identical to the provided configuration [`run-client-milestone.sh`](https://github.com/dtu-ese/os-challenge-common/blob/master/run-client-milestone.sh), except that the difficulty and delay have each been decreased by a factor of 10. This configuration allowed us to perform many more meaningful tests within a reasonable amount of time. You may assume that this was the configuration used for benchmarking _**unless stated differently in an individual experiment report**_. Note that we strove to control all variables within an experiment so that we can accurately make comparisons between each solution and a baseline. However, because each experiment could have been done on a different day on a different computer (potentially with a different run configuration if stated), results from one experiment should not be compared with results from another experiment to make any conclusions about performance.
@@ -148,6 +148,50 @@ As shown by the results above, the average score of Solution_3 was lower than th
 
 ### Discussion
 The conclusion provides evidence that priority scheduling with "nice values" is statistically significantly faster than ignoring priority. This result makes sense. After all, the same number of processes is created in the same order as before. The only difference is that the scheduler now selects higher priority requests more often than lower priority requests, improving performance without any significant downside. The difference in performance could of course be exaggerated by using a client configuration with a lower priority lambda causing a greater spread of priorities, but we chose to use `test.sh` since it is a lightweight simulation of the final submission run configuration. Note that this "nice value" method is only useful in situations where there are more processes than available cores, a situation which may already be undesirable due to the increased time spent switching between processes. Since many of our future solutions are optimized by limiting the process/thread pool to the number of cores, this solution quickly becomes obsolete and will likely not make it into our final solution.
+
+
+## Experiment 4: Caché - Pedro-Pablo Wachtendorff (s221411)
+
+### Background
+The goal of this experiment is to determine whether using a caché is faster than not using one. We refer to the new solution as Solution_4, and its code can be found on a branch called [`Experiment_4_v3`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_4_v3). Our second working implementation is a multithreading solution, and it will serve as the control for this experiment. We refer to this control solution as Solution_1, and it's code can be found on a branch called [`milestone`](https://github.com/SamLonneman/os-challenge-wavy-gang/tree/Experiment_1).
+
+### Hypothesis
+We hypothesize that Solution_4 will run faster (score lower) than Solution_1 in the test environment. Furthermore, the null hypothesis for this experiment is that Solution_4 will run slower than or equal to (score higher than or equal to) Solution_1 in the test environment.
+
+### Rationale
+Solution_1 has one thread which constantly accepts incoming requests and starts new thread to immediately begin handling each one. Solution_4 works with the same idea, but previously handling each request it asked to a caché for known values that were already proccessed before. We hypothesize that Solution_4 will run faster than Solution_1 simply due to assumption that accesing to known values in a conveniently restricted memory store is considerably faster than processing the same repeated value. Therefore, this will be better in the entire request process.
+
+### Variables
+The independent variable in this experiment is whether the solution is optimized including a cache or not (Solution_4 vs Solution_1). The dependent variable will be the score returned from the client after running a test suite. To ensure that other variables are consistent, we will perform every test using the same run configuration with the same randomization seed on the same virtual machine running on the same computer.
+
+### Method
+For both implementations of the server, we will run `test.sh` 10 times and take the average of the scores. We will then compare the average scores of each implementation to determine which implementation runs faster. Finally, we will perform a hypothesis test with alpha=0.05 to determine whether the difference in scores is statistically significant given our sample size.
+
+### Results
+The results of this experiment can be found in the table below.
+
+|   Run   | Score (Solution_1) | Score (Solution_4) |
+|:-------:|:------------------:|:------------------:|
+|    1    |      3980713       |      2752393       |
+|    2    |      3625083       |      3474491       |
+|    3    |      3595248       |      2909007       |
+|    4    |      3492727       |      2316086       |
+|    5    |      3924176       |      3704961       |
+|    6    |      3943407       |      3371207       |
+|    7    |      3489506       |      3392503       |
+|    8    |      3715929       |      2684450       |
+|    9    |      3545475       |      2086809       |
+|   10    |      3862122       |      2058934       |
+| Average |      3717439       |      2875084       |
+
+### Conclusion
+The results of our experiment above show that on average Solution_4 scored much lower than Solution_1. Also, after performing a statistical hypothesis test with alpha=0.05, we received a P-value of 0.005, so we succeed to reject the null hypothesis that Solution_4 will run slower than or equal to (score higher than or equal to) Solution_1 in the test environment.
+
+### Discussion
+The conclusion provides evidence that simply adding a cache (as an array that saves values) in a multithreading context it improves significantly the performance. This conclusion makes sense when we remember that we only expected a performance improvement by reducing the time processing repeated values. This is a difference when we have a high procentage of repetetion in the requests. It seems likely that this results might improve as higher the repetitions in the requests are. Furthermore, the experiment is very important to our project because its improving the overall scores and is also an improvement for the main  laid the foundation for future experiments which are based on multithreading.
+
+### Improvements
+In the future, it would be helpful for such an experiment to create a dynamic array and not a static one, in that way, the array would increase his size depending of te size of the request. Also a good improvement would be that instead of using a normal array use a hash table to save the repeated values. This would allow us to be more efficient searching the values in the table and also saving them. A good improvement would be that at the moment of saving the values, create a slope of time which the thread cannot interfere with other threads. Thus, every repeated value would be saved in the correct position and in the right moment.
 
 
 ## Experiment 5: Request Priority Queue - Sam Lonneman (s216999)
