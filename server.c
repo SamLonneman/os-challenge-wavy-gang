@@ -58,6 +58,7 @@ void* reader(void *arg){
 
                 write(newSockFd, &key, 8);                  // send result back to client
                 close(newSockFd);
+                break;
             }
             j = j - 1;
         }
