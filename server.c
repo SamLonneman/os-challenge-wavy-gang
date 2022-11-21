@@ -26,13 +26,15 @@ hash_t hashArray[16][1001] = {0};
 void* reader(void *arg){
     free(arg);
     int newSockFd;
+    int stop;
+    stop = 5;
 
     int i;  // i is the priority level (-1) being looped over --> note that the loop decrements as higher priorities are addressed first
     i = 15;
-    while (i > -1) {
+    while (i > -1 && stop == 5) {
         int j;                      // j is the next spot to look at to be processed
         j = priorityArray[i][0]-1;  // decrement by one as we want the last full spot (not the next availabe spot)
-        while (j > 0) {
+        while (j > 0 && stop == 5) {
             // work on request in place priorityArray[i][priorityArray[i][0]-1]
             // Convert byte order as needed
             newSockFd = priorityArray[i][j];
@@ -58,6 +60,7 @@ void* reader(void *arg){
 
                 write(newSockFd, &key, 8);                  // send result back to client
                 close(newSockFd);
+                stop = 10;
             }
             j = j - 1;
         }
