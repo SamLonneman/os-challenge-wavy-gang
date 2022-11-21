@@ -109,39 +109,41 @@ int main(int argc, char *argv[]) {
 
     // Accept client connections until there are none left
     while (1) {
-        int newSockFd;
-        newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen); // Accept connection ( will take the first in the queue)
-        requestCounter++;
+        if(requestCounter < 1000) {
+            int newSockFd;
+            newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr,
+                               &clilen); // Accept connection ( will take the first in the queue)
+            requestCounter++;
 
-        // check for error
-        if (newSockFd < 0) {
-            perror("ERROR on accept");
-            exit(1); // exit when the newSockFd < 0 as no more requests
+            // check for error
+            if (newSockFd < 0) {
+                perror("ERROR on accept");
+                exit(1); // exit when the newSockFd < 0 as no more requests
+            }
+
+            // Read in request through new socket
+            uint8_t buffer[PACKET_REQUEST_SIZE];
+            read(newSockFd, buffer, PACKET_REQUEST_SIZE);
+
+            // Declare request components
+            hash_t hash;
+            uint64_t start;
+            uint64_t end;
+            uint8_t p;
+
+            // Extract components from request
+            memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
+            memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
+            memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
+            memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
+
+            int arraySpot = priorityArray[p - 1][0];                    // find spot in array for this request
+            priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1;      // increment count for next available spot
+            memcpy(hashArray[p - 1][arraySpot], hash, 32);
+            startArray[p - 1][arraySpot] = start;                       // store start value
+            endArray[p - 1][arraySpot] = end;                           // store end value
+            priorityArray[p - 1][arraySpot] = newSockFd;                // indicate there is a request with != NULL
         }
-
-        // Read in request through new socket
-        uint8_t buffer[PACKET_REQUEST_SIZE];
-        read(newSockFd, buffer, PACKET_REQUEST_SIZE);
-
-        // Declare request components
-        hash_t hash;
-        uint64_t start;
-        uint64_t end;
-        uint8_t p;
-
-        // Extract components from request
-        memcpy(hash, buffer + PACKET_REQUEST_HASH_OFFSET, 32);
-        memcpy(&start, buffer + PACKET_REQUEST_START_OFFSET, 8);
-        memcpy(&end, buffer + PACKET_REQUEST_END_OFFSET, 8);
-        memcpy(&p, buffer + PACKET_REQUEST_PRIO_OFFSET, 1);
-
-        int arraySpot = priorityArray[p - 1][0];                    // find spot in array for this request
-        priorityArray[p - 1][0] = priorityArray[p - 1][0] + 1;      // increment count for next available spot
-        memcpy(hashArray[p - 1][arraySpot], hash, 32);
-        startArray[p - 1][arraySpot] = start;                       // store start value
-        endArray[p - 1][arraySpot] = end;                           // store end value
-        priorityArray[p - 1][arraySpot] = newSockFd;                // indicate there is a request with != NULL
-
         // continue threads while there are still requests to be answered
         if(p<1000 && thread_count <= 6) {
             p++;
