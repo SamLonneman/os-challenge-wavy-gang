@@ -21,7 +21,7 @@ For both implementations of the server, we will run `test.sh` 10 times and take 
 ### Results
 The results of this experiment can be found in the table below.
 
-|   Run   | Score (Solution_0) | Score (Solution_1) |
+|   Run   | Score (Solution_1) | Score (Solution_4) |
 |:-------:|:------------------:|:------------------:|
 |    1    |      3980713       |      2752393       |
 |    2    |      3625083       |      3474491       |
@@ -36,10 +36,10 @@ The results of this experiment can be found in the table below.
 | Average |      3717439       |      2875084       |
 
 ### Conclusion
-The results of our experiment above show that on average Solution_1 scored slightly lower than Solution_0. However, after performing a statistical hypothesis test with alpha=0.05, we received a P-value of 0.44, so we fail to reject the null hypothesis that Solution_1 will run slower than or equal to (score higher than or equal to) Solution_0 in the test environment.
+The results of our experiment above show that on average Solution_4 scored much lower than Solution_1. Also, after performing a statistical hypothesis test with alpha=0.05, we received a P-value of 0.005, so we succeed to reject the null hypothesis that Solution_4 will run slower than or equal to (score higher than or equal to) Solution_1 in the test environment.
 
 ### Discussion
-The conclusion provides evidence that simply replacing a multiprocess approach with a multithreaded approach does not significantly improve performance. This conclusion makes sense when we remember that we only expected a performance improvement by reducing the overhead of creating new processes. This is a very small difference, and more importantly, this very small improvement only occurs once per request (maybe just a few hundred times depending on the client run configuration). It seems likely that this improvement might only become significant with an arbitrarily large number of requests (far more than could realistically be tested). Furthermore, even though the results were insufficient for rejecting our null hypothesis, the experiment was still very important to our project because it laid the foundation for future experiments which are based on multithreading.
+The conclusion provides evidence that simply adding a cache (as an array that saves values) in a multithreading context it improves significantly the performance. This conclusion makes sense when we remember that we only expected a performance improvement by reducing the time processing repeated values. This is a difference when we have a high procentage of repetetion in the requests. It seems likely that this results might improve as higher the repetitions in the requests are. Furthermore, the experiment is very important to our project because its improving the overall scores and is also an improvement for the main  laid the foundation for future experiments which are based on multithreading.
 
 ### Improvements
 In the future, it would be helpful for such an experiment to have an automated script to run the client several times and automatically collect the results into a usable format instead of manually kicking off each run and recording the score. This would allow us to more practically increase our sample size and thus increase the statistical significance of our results. Also, both solutions currently allow for an unchecked number of threads/processes to run pseudo-concurrently, meaning a non-negligible amount of time is devoted to switching between them. Perhaps a solution could be devised which reduces the amount of time spent switching between threads/processes.
