@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     }
 
     int NUM_CONNECTIONS;                // number of connections
-    NUM_CONNECTIONS = 100;              // set to 50 for testing purposes
+    NUM_CONNECTIONS = 1000;              // set to 50 for testing purposes
 
     listen(sockfd, NUM_CONNECTIONS);        // Listen for client --> waits for client to make connection with server
 
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
             p = 0;
             int i;
             i = 15;     // i is the priority levels
-            while (i > -1 && p <= 1000) {
+            while (i > -1 && p <= 250) {
                 int j;
                 j = priorityArray[i][0]-1;        // j is the next spot to look at to be processed
                 while (j > 0) {
