@@ -14,6 +14,7 @@ int requestCounter;
 int requestsLeft;
 int p = 0;
 int thread_count;
+int processed_requests;
 
 // arrays to store info on each request - each column represents each priority level (1-16)
 typedef uint8_t hash_t[32];
@@ -29,42 +30,46 @@ void* reader(void *arg){
     int stop;
     stop = 5;
 
-    int i;  // i is the priority level (-1) being looped over --> note that the loop decrements as higher priorities are addressed first
-    i = 15;
-    while (i > -1 && stop == 5) {
-        int j;                      // j is the next spot to look at to be processed
-        j = priorityArray[i][0]-1;  // decrement by one as we want the last full spot (not the next availabe spot)
-        while (j > 0 && stop == 5) {
-            // work on request in place priorityArray[i][priorityArray[i][0]-1]
-            // Convert byte order as needed
-            newSockFd = priorityArray[i][j];
+    while(processed_requests < 1000) {
 
-            // only work on request if it hasn't been worked on yet
-            if(newSockFd != -20) {
-                uint64_t start = htobe64(startArray[i][j]);
-                uint64_t end = htobe64(endArray[i][j]);
-                hash_t hash;
-                memcpy(hash, hashArray[i][j], 32);
-                priorityArray[i][j] = -20;                  // set newSockFd to -20 if response already sent back
+        int i;  // i is the priority level (-1) being looped over --> note that the loop decrements as higher priorities are addressed first
+        i = 15;
+        while (i > -1) {
+            int j;                      // j is the next spot to look at to be processed
+            j = priorityArray[i][0] -
+                1;  // decrement by one as we want the last full spot (not the next available spot)
+            while (j > 0) {
+                // work on request in place priorityArray[i][priorityArray[i][0]-1]
+                // Convert byte order as needed
+                newSockFd = priorityArray[i][j];
 
-                uint8_t calculatedHash[32];
-                uint64_t key;
+                // only work on request if it hasn't been worked on yet
+                if (newSockFd != -20) {
+                    uint64_t start = htobe64(startArray[i][j]);
+                    uint64_t end = htobe64(endArray[i][j]);
+                    hash_t hash;
+                    memcpy(hash, hashArray[i][j], 32);
+                    priorityArray[i][j] = -20;                  // set newSockFd to -20 if response already sent back
 
-                for (key = start; key < end; key++) {
-                    SHA256((uint8_t * ) & key, 8, calculatedHash);
-                    if (memcmp(hash, calculatedHash, 32) == 0)
-                        break;
+                    uint8_t calculatedHash[32];
+                    uint64_t key;
+
+                    for (key = start; key < end; key++) {
+                        SHA256((uint8_t * ) & key, 8, calculatedHash);
+                        if (memcmp(hash, calculatedHash, 32) == 0)
+                            break;
+                    }
+
+                    key = be64toh(key);
+
+                    write(newSockFd, &key, 8);                  // send result back to client
+                    close(newSockFd);
+                    processed_requests++;
                 }
-
-                key = be64toh(key);
-
-                write(newSockFd, &key, 8);                  // send result back to client
-                close(newSockFd);
-                stop = 10;
+                j = j - 1;
             }
-            j = j - 1;
+            i = i - 1;
         }
-        i = i - 1;
     }
     thread_count = thread_count -1;
     close(newSockFd);
@@ -73,6 +78,7 @@ void* reader(void *arg){
 
 
 int main(int argc, char *argv[]) {
+    processed_requests = 0;
     thread_count = 0;
     // the first element in each row is a count of the next place to be filled in the matrix for each given priority
     int num;
