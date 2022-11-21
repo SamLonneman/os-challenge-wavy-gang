@@ -60,6 +60,8 @@ void* reader(void *arg){
                 close(newSockFd);
                 j = -20;
                 i = -20;
+                thread_count = thread_count -1;
+                pthread_exit(NULL);
                 break;
             }else {
                 j = j - 1;
