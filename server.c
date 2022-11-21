@@ -61,8 +61,7 @@ void* reader(void *arg){
                 j = -20;
                 i = -20;
                 break;
-            }
-            else {
+            }else {
                 j = j - 1;
             }
         }
@@ -114,7 +113,6 @@ int main(int argc, char *argv[]) {
 
     // Accept client connections until there are none left
     while (1) {
-        if(requestCounter < 1000) {
             int newSockFd;
             newSockFd = accept(sockfd, (struct sockaddr *) &cli_addr,
                                &clilen); // Accept connection ( will take the first in the queue)
@@ -148,7 +146,7 @@ int main(int argc, char *argv[]) {
             startArray[p - 1][arraySpot] = start;                       // store start value
             endArray[p - 1][arraySpot] = end;                           // store end value
             priorityArray[p - 1][arraySpot] = newSockFd;                // indicate there is a request with != NULL
-        }
+
         // continue threads while there are still requests to be answered
         if(p<1000 && thread_count <= 6) {
             p++;
