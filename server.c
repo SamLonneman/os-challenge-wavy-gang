@@ -27,11 +27,6 @@ hash_t hashArray[16][1001] = {0};
 void* reader(void *arg){
     free(arg);
     int newSockFd;
-    int stop;
-    stop = 5;
-
-    while(processed_requests < 1000) {
-
         int i;  // i is the priority level (-1) being looped over --> note that the loop decrements as higher priorities are addressed first
         i = 15;
         while (i > -1) {
@@ -64,13 +59,11 @@ void* reader(void *arg){
 
                     write(newSockFd, &key, 8);                  // send result back to client
                     close(newSockFd);
-                    processed_requests++;
                 }
                 j = j - 1;
             }
             i = i - 1;
         }
-    }
     thread_count = thread_count -1;
     close(newSockFd);
     pthread_exit(NULL);
@@ -154,10 +147,8 @@ int main(int argc, char *argv[]) {
 
 
         // continue threads while there are still requests to be answered
-            if (thread_count <= 6) {
-                p++;
-                pthread_t tid;
-                pthread_create(&tid, NULL, reader, NULL);
-            }
+        p++;
+        pthread_t tid;
+        pthread_create(&tid, NULL, reader, NULL);
     }
 }
